@@ -128,4 +128,33 @@ protected void btnSearch_Click(object sender, EventArgs e)
         }
     }
 }
+-----------------------------------------------------------------------STORED PROCEDURE NOT WORKING ****CHECK****_______________________________________________
+public void searchAndDisplay()
+{
 
+    string selectedColumn = ddlOptions.SelectedValue;
+    string selectedValue = ddlSortItems.SelectedValue;
+
+    SqlConnection objCon = new SqlConnection("server=(localdb)\\local;" +
+        "database=CIMSPROJECT; " +
+        "integrated security=true");
+    //objCon.Open();
+    //string query = $"SELECT  FROM car WHERE {selectedColumn} = @value";
+    SqlCommand objComm=new SqlCommand("SearchCar",objCon); //////////////////////newly added line 
+    objComm.CommandType=CommandType.StoredProcedure;
+
+    //SqlParameter objsqlParam_Id = new SqlParameter("@ColumnName", SqlDbType.NVarChar,100);
+    //SqlParameter objsqlParam_Name = new SqlParameter("@value", SqlDbType.NVarChar, 100);
+    objComm.Parameters.AddWithValue("@ColumnName", selectedColumn);
+    objComm.Parameters.AddWithValue("@Value", selectedValue);
+    objCon.Open();
+    objComm.ExecuteNonQuery();
+    objCon.Close();
+    SqlDataAdapter adapter = new SqlDataAdapter(objComm);
+    DataTable dt = new DataTable();
+        adapter.Fill(dt);
+
+        GridView1.DataSource = dt;
+        GridView1.DataBind();
+   
+}
