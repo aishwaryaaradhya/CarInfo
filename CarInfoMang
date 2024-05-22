@@ -105,4 +105,27 @@ CREATE TABLE Car (
     FOREIGN KEY (ManufacturerId) REFERENCES Manufacturer(Id),
     FOREIGN KEY (CarTypeId) REFERENCES CarType(Id),
     FOREIGN KEY (TransmissionTypeId) REFERENCES CarTransmissionType(Id)
-);
+---------
+protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            string selectedColumn = ddlColumn.SelectedValue;
+            string selectedValue = ddlDistinctValues.SelectedValue;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = $"SELECT * FROM car WHERE {selectedColumn} = @value";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@value", selectedValue);
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                gvResults.DataSource = dt;
+                gvResults.DataBind();
+            }
+        }
+    }
+}
+
