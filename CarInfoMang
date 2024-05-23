@@ -168,3 +168,9 @@ protected void btnSearch_Click(object sender, EventArgs e)
         <td>&nbsp;</td>
     </tr>
 </table>
+
+
+==================bootstrap styling===========
+link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
