@@ -174,3 +174,120 @@ protected void btnSearch_Click(object sender, EventArgs e)
 link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+
+
+
+
+--------------------------presentation----------
+Creating a PowerPoint presentation for the Car Information Management System (CIMS) involves outlining the key components, functionalities, and details of the system as described in your problem statement. Here is a structured approach to your presentation:
+
+### Slide 1: Title Slide
+- **Title**: Car Information Management System (CIMS)
+- **Subtitle**: An Overview of Features and Functionalities
+- **Presented By**: [Your Name/Team Name]
+- **Date**: [Date]
+
+### Slide 2: Agenda
+- Introduction
+- Objectives
+- Actors
+- Macro Level Operations
+- Module List and Details
+- Entity Descriptions
+- Constraints
+- Summary
+
+### Slide 3: Introduction
+- **What is CIMS?**
+  - A system designed to manage and view detailed information about cars.
+  - Helps administrators perform various operations on car data.
+
+### Slide 4: Objectives
+- To enable administrators to:
+  - Add, update, delete, and search car details.
+  - View car details based on specific criteria (Manufacturer, Type).
+- To provide customers (future enhancement) with:
+  - The ability to search and view car details.
+
+### Slide 5: Actors
+- **Administrator**:
+  - Add Car
+  - Update Car
+  - Delete Car
+  - Search Car by Name
+  - View Car List by Manufacturer and Type
+- **Customer** (Future Enhancement):
+  - Search Car by Name
+  - View Car List by Manufacturer and Type
+
+### Slide 6: Macro Level Operations
+- **Add Car Details**
+- **Modify Car Details**
+- **Remove Car**
+- **View Car List**
+- **Search Car by Model**
+
+### Slide 7: Module List and Details
+- **Create Car**
+  - Capture car details: Manufacturer, Model, Type, Engine, BHP, Transmission, Mileage, Seats, AirBagDetails, BootSpace, Features, Price.
+- **Search Car**
+  - Search by model name.
+- **Modify Car**
+  - Search and update car details.
+- **Remove Car**
+  - Search and delete car details with confirmation.
+- **Car Summary (View)**
+  - Display car list with essential details in a tabular format.
+
+### Slide 8: Entity Descriptions
+- **Car Entity**:
+  - ManufacturerName : String
+  - Model : String (Must be unique)
+  - Type : String (“Hatchback”, “Sedan” or “SUV”)
+  - Engine : String (4 characters long, format: 1.2L)
+  - BHP: Number
+  - Transmission: String (Manual/Automatic)
+  - Mileage: Number
+  - Seats: Number
+  - AirBagDetails: String
+  - BootSpace: Number
+  - Price: Number
+
+### Slide 9: Entity Descriptions (Continued)
+- **Manufacturer Entity**:
+  - Id: Numeric
+  - Name: String
+  - ContactNo: String (10 digits)
+  - RegisteredOffice: String
+- **CarType Entity**:
+  - Id: Numeric
+  - Type: String (“Hatchback”, “Sedan” or “SUV”)
+- **CarTransmissionType Entity**:
+  - Id: Numeric
+  - Type: String (“Manual” or “Automatic”)
+
+### Slide 10: Constraints
+- Proper validation required for all inputs.
+- Appropriate messages for all activities (success or failure).
+- User-friendly menu for selecting activities.
+- Unique constraints and formatting rules for certain fields (e.g., Model, Engine).
+
+### Slide 11: Summary
+- CIMS aims to streamline the management of car details for administrators.
+- Comprehensive functionalities including add, modify, delete, search, and view.
+- Future enhancements for customer functionalities.
+- Ensures data validation and user-friendly operations.
+
+### Slide 12: Q&A
+- **Questions?**
+
+### Slide 13: Thank You
+- **Thank you for your attention!**
+- **Contact Information**: [Your Contact Info]
+
+### Note:
+- Add visual elements like icons, relevant images, and diagrams where appropriate to make the slides more engaging.
+- Ensure that each slide is not overly cluttered with text; use bullet points for clarity.
+- Practice presenting to ensure smooth delivery and a clear understanding of each slide's content.
+
+You can create this PowerPoint presentation using tools like Microsoft PowerPoint, Google Slides, or any other presentation software.
