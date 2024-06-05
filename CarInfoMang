@@ -291,3 +291,58 @@ Creating a PowerPoint presentation for the Car Information Management System (CI
 - Practice presenting to ensure smooth delivery and a clear understanding of each slide's content.
 
 You can create this PowerPoint presentation using tools like Microsoft PowerPoint, Google Slides, or any other presentation software.
+===========================================================GROUP PROJECT=========================================================================
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using System.Web.Http.Description;
+using Car_Info_Management.Models.Entities;
+
+namespace Car_Info_Management.Controllers
+{
+    public class CarInfoesController : ApiController
+    {
+        private Car1 db = new Car1();
+
+        // GET:api/Values
+
+        public IEnumerable<CarInfo> GetCarInfoes()
+        {
+            string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SqlConStr"].ToString();
+            string sqlSelect="Select * form Car"
+            SqlDataAdapter da=new SqlDataAdapter(sqlSelect);
+            //return db.CarInfoes.Include(c =>c.CarType)
+            //    .Include(c =>c.Manufacturer)
+            //    .Include(c =>c.CarTransmissionType)
+            //    .ToList();
+
+            var carInfoes = from car in db.CarInfoes
+                            select new CarInfo
+                            {
+                                CarId = car.CarId,
+                                CarType = car.CarType,
+                                Manufacturer = car.Manufacturer,
+                                CarTransmissionType = car.CarTransmissionType
+                            };
+            return carInfoes;
+        }
+
+        // GET: api/CarInfoes/5
+        [ResponseType(typeof(CarInfo))]
+        public IHttpActionResult GetCarInfo(int id)
+        {
+            CarInfo carInfo = db.CarInfoes.Find(id);
+            if (carInfo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(carInfo);
+        }
