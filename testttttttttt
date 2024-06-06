@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
+using System.Web;
+using System.Web.Mvc;
+using CarInfoManagement_MVCController.Models;
+using Car_Info_Management.Models.Entities;
+//add namespace 
+using Car_Info_Management.Controllers;
+using System.Web.Compilation;
+using Newtonsoft.Json;
+using System.Dynamic;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+
+namespace CarInfoManagement_MVCController.Controllers
+{
+    public class CarInfoesController : Controller
+    {
+        private readonly HttpClient _httpClient;
+        //private readonly IHttpClientFactory _httpClientFactory;
+
+        public CarInfoesController()
+        {
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:44388/api/")
+            };
+        }
+
+
+        // GET: CarInfoes
+        public async Task<ActionResult> Index()
+        {
+            List<CarInfo> carInfoList =new List<CarInfo>();
+            //return View(carInfoList);
+
+            HttpResponseMessage response = await HelperIndex();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                carInfoList = JsonConvert.DeserializeObject<List<CarInfo>>(data);
+                return View(carInfoList);
+            }
+            return View();
+        }
+
+        private async Task<HttpResponseMessage> HelperIndex()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync("CarInfoes");
+
+            return response;
+        }
