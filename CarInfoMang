@@ -374,3 +374,65 @@ public class CarInfoController : ControllerBase
         return Ok(carDetails);
     }
 }
+
+
+
+
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
+namespace Car_Info_Management.Controllers
+{
+    public class CarInfoesController : Controller
+    {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public CarInfoesController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        // GET: CarInfoes
+        public async Task<IActionResult> Index()
+        {
+            var carInfoList = await GetCarInfoAsync();
+            return View(carInfoList);
+        }
+
+        // Helper function to call the API and retrieve car information
+        private async Task<IEnumerable<CarInfo>> GetCarInfoAsync()
+        {
+            IEnumerable<CarInfo> carInfoList = new List<CarInfo>();
+
+            using (var client = _httpClientFactory.CreateClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44388/api/");
+                var response = await client.GetAsync("GetCarInfoes");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    carInfoList = JsonConvert.DeserializeObject<IEnumerable<CarInfo>>(data);
+                }
+                else
+                {
+                    // Handle the error response
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+
+            return carInfoList;
+        }
+    }
+
+    public class CarInfo
+    {
+        public int Id { get; set; }
+        public string Make { get; set; }
+        public string Model { get; set; }
+        public int Year { get; set; }
+    }
+}
