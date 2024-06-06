@@ -436,3 +436,34 @@ namespace Car_Info_Management.Controllers
         public int Year { get; set; }
     }
 }
+---------------------------------------
+private async Task<List<CarInfo>> HelperGetCarInfoAsync()
+{
+    List<CarInfo> carInfoList = new List<CarInfo>();
+
+    using (var client = _httpClientFactory.CreateClient())
+    {
+        client.BaseAddress = new Uri("https://localhost:44388/api/");
+        var response = await client.GetAsync("GetCarInfoes");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            carInfoList = JsonConvert.DeserializeObject<List<CarInfo>>(data);
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+        }
+    }
+
+    return carInfoList;
+}
+
+
+
+public async Task<IActionResult> Index()
+{
+    var carInfoList = await HelperGetCarInfoAsync();
+    return View(carInfoList);
+}
