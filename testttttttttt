@@ -2,57 +2,172 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
-using System.Web;
-using System.Web.Mvc;
-using CarInfoManagement_MVCController.Models;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Description;
 using Car_Info_Management.Models.Entities;
-//add namespace 
-using Car_Info_Management.Controllers;
-using System.Web.Compilation;
-using Newtonsoft.Json;
-using System.Dynamic;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
-namespace CarInfoManagement_MVCController.Controllers
+namespace Car_Info_Management.Controllers
 {
-    public class CarInfoesController : Controller
+    public class CarInfoesController : ApiController
     {
-        private readonly HttpClient _httpClient;
-        //private readonly IHttpClientFactory _httpClientFactory;
+        private Car1 db = new Car1();
 
-        public CarInfoesController()
+        // GET:api/Values
+
+        //public IEnumerable<CarInfo> GetCarInfoes()
+        public IEnumerable<object> GetCarInfoes()
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:44388/api/")
-            };
+            var carDetails = (from car in db.CarInfoes
+                              join carType in db.CarTypes on car.CarTypeId equals carType.Id
+                              join carTransmission in db.CarTransmissionTypes on car.TransmissionTypeId equals carTransmission.Id
+                              join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
+                              select new
+                              {
+                                  CarId = car.CarId,
+                                  carType = car.CarTypeId,
+                                  CarType = car.CarType,
+                                  TransmissionID = carTransmission.Id,
+                                  TransmissionName = carTransmission.Type,
+                                  ManufacturerId = manufacturer.Id,
+                                  Manufacturername = manufacturer.Name,
+                                  carEngine = car.Engine,
+                                  carBHP = car.BHP,
+                                  carMileage = car.Mileage,
+                                  carSeat = car.Seat,
+                                  carAirbagDetails = car.AirBagDetails,
+                                  carBootspace = car.BootSpace,
+                                  carPrice = car.Price
+                              }).ToList();
+
+            return carDetails;
         }
 
-
-        // GET: CarInfoes
-        public async Task<ActionResult> Index()
+        // GET: api/CarInfoes/5
+        [ResponseType(typeof(CarInfo))]
+        public IHttpActionResult GetCarInfo(int id)
         {
-            List<CarInfo> carInfoList =new List<CarInfo>();
-            //return View(carInfoList);
-
-            HttpResponseMessage response = await HelperIndex();
-
-            if (response.IsSuccessStatusCode)
+            var carInfo = (from car in db.CarInfoes
+                           where car.CarId == id
+                           join carType in db.CarTypes on car.CarTypeId equals carType.Id
+                           join carTransmission in db.CarTransmissionTypes on car.TransmissionTypeId equals carTransmission.Id
+                           join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
+                           select new
+                           {
+                               CarId = car.CarId,
+                               carType = car.CarTypeId,
+                               TransmissionID = carTransmission.Id,
+                               TransmissionName = carTransmission.Type,
+                               ManufacturerId = manufacturer.Id,
+                               Manufacturername = manufacturer.Name,
+                               carEngine = car.Engine,
+                               carBHP = car.BHP,
+                               carMileage = car.Mileage,
+                               carSeat = car.Seat,
+                               carAirbagDetails = car.AirBagDetails,
+                               carBootspace = car.BootSpace,
+                               carPrice = car.Price
+                           });
+            //CarInfo carInfo = db.CarInfoes.Find(id);
+            if (carInfo == null)
             {
-                var data = await response.Content.ReadAsStringAsync();
-                carInfoList = JsonConvert.DeserializeObject<List<CarInfo>>(data);
-                return View(carInfoList);
+                return NotFound();
             }
-            return View();
+
+            return Ok((CarInfo)carInfo);
         }
 
-        private async Task<HttpResponseMessage> HelperIndex()
+        // PUT: api/CarInfoes/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutCarInfo(int id, CarInfo carInfo)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync("CarInfoes");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return response;
+            if (id != carInfo.CarId)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(carInfo).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CarInfoExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
         }
+
+        // POST: api/CarInfoes
+        [ResponseType(typeof(CarInfo))]
+        public IHttpActionResult PostCarInfo(CarInfo carInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                db.CarInfoes.Add(carInfo);
+                db.SaveChanges();
+
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+
+
+
+            return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
+        }
+
+        // DELETE: api/CarInfoes/5
+        [ResponseType(typeof(CarInfo))]
+        public IHttpActionResult DeleteCarInfo(int id)
+        {
+
+            var carInfo = (from car in db.CarInfoes
+                           where car.CarId == id
+                           select car).FirstOrDefault();
+
+            if (carInfo == null)
+            {
+                return NotFound();
+            }
+
+            db.CarInfoes.Remove(carInfo);
+            db.SaveChanges();
+
+            return Ok(carInfo);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private bool CarInfoExists(int id)
+        {
+            return db.CarInfoes.Count(e => e.CarId == id) > 0;
+        }
+    }
+}
