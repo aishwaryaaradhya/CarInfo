@@ -1,3 +1,4 @@
+This is my API Controller:
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,12 +29,12 @@ namespace Car_Info_Management.Controllers
                               join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
                               select new
                               {
-                                  CarId = car.CarId,
-                                  carType = car.CarTypeId,
-                                  CarType = car.CarType,
-                                  TransmissionID = carTransmission.Id,
-                                  TransmissionName = carTransmission.Type,
+                                  carId= car.CarId,
                                   ManufacturerId = manufacturer.Id,
+                                  carTypeId = car.CarTypeId,
+                                  TransmissionID = car.CarTransmissionType.Id,
+                                  carTypeName = carType.Type,                                 
+                                  TransmissionName = carTransmission.Type,
                                   Manufacturername = manufacturer.Name,
                                   carEngine = car.Engine,
                                   carBHP = car.BHP,
@@ -46,128 +47,244 @@ namespace Car_Info_Management.Controllers
 
             return carDetails;
         }
+}
+}
 
-        // GET: api/CarInfoes/5
-        [ResponseType(typeof(CarInfo))]
-        public IHttpActionResult GetCarInfo(int id)
+This is my MVC CONTROLLER==========================================
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
+using System.Web;
+using System.Web.Mvc;
+using CarInfoManagement_MVCController.Models;
+using Car_Info_Management.Models.Entities;
+//add namespace 
+using Car_Info_Management.Controllers;
+using System.Web.Compilation;
+using Newtonsoft.Json;
+using System.Dynamic;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+
+namespace CarInfoManagement_MVCController.Controllers
+{
+    public class CarInfoesController : Controller
+    {
+        
+
+
+        // GET: CarInfoes
+        public async Task<ActionResult> Index()
         {
-            var carInfo = (from car in db.CarInfoes
-                           where car.CarId == id
-                           join carType in db.CarTypes on car.CarTypeId equals carType.Id
-                           join carTransmission in db.CarTransmissionTypes on car.TransmissionTypeId equals carTransmission.Id
-                           join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
-                           select new
-                           {
-                               CarId = car.CarId,
-                               carType = car.CarTypeId,
-                               TransmissionID = carTransmission.Id,
-                               TransmissionName = carTransmission.Type,
-                               ManufacturerId = manufacturer.Id,
-                               Manufacturername = manufacturer.Name,
-                               carEngine = car.Engine,
-                               carBHP = car.BHP,
-                               carMileage = car.Mileage,
-                               carSeat = car.Seat,
-                               carAirbagDetails = car.AirBagDetails,
-                               carBootspace = car.BootSpace,
-                               carPrice = car.Price
-                           });
-            //CarInfo carInfo = db.CarInfoes.Find(id);
-            if (carInfo == null)
+            List<CarInfo> carInfoList =new List<CarInfo>();
+            using(var client=new HttpClient())
             {
-                return NotFound();
-            }
-
-            return Ok((CarInfo)carInfo);
-        }
-
-        // PUT: api/CarInfoes/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutCarInfo(int id, CarInfo carInfo)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != carInfo.CarId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(carInfo).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CarInfoExists(id))
+                client.BaseAddress = new Uri("https://localhost:44388/api/");
+                var response = await client.GetAsync("CarInfoes");
+                if (response.IsSuccessStatusCode)
                 {
-                    return NotFound();
+                    carInfoList = await response.Content.ReadAsAsync<List<CarInfo>>();
+                    return View(carInfoList);
                 }
                 else
                 {
-                    throw;
+                    ModelState.AddModelError(String.Empty, "Server Error.Please Contact admin");
                 }
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            //return View(carInfoList);
+            return View(carInfoList);
         }
 
-        // POST: api/CarInfoes
-        [ResponseType(typeof(CarInfo))]
-        public IHttpActionResult PostCarInfo(CarInfo carInfo)
+This si my carInfo model==================================
+namespace Car_Info_Management.Models.Entities
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    [Table("CarInfo")]
+    public partial class CarInfo
+    {
+        [Key]
+        public int CarId { get; set; }
+
+        public int ManufacturerId { get; set; }
+
+        public int CarTypeId { get; set; }
+
+        public int TransmissionTypeId { get; set; }
+
+        [Required]
+        [StringLength(4)]
+        public string Engine { get; set; }
+
+        public int BHP { get; set; }
+
+        public int Mileage { get; set; }
+
+        public int Seat { get; set; }
+
+        public int AirBagDetails { get; set; }
+
+        public int BootSpace { get; set; }
+
+        public decimal Price { get; set; }
+
+        public virtual CarType CarType { get; set; }
+
+        public virtual CarTransmissionType CarTransmissionType { get; set; }
+
+        public virtual Manufacturer Manufacturer { get; set; }
+    }
+}
+
+This is my DBContext===========
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using System.Linq;
+
+namespace Car_Info_Management.Models.Entities
+{
+    public partial class Car1 : DbContext
+    {
+        public Car1()
+            : base("name=car1")
         {
-            if (ModelState.IsValid)
-            {
-                db.CarInfoes.Add(carInfo);
-                db.SaveChanges();
-
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
-
-
-
-            return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
+            Configuration.LazyLoadingEnabled = false;
         }
 
-        // DELETE: api/CarInfoes/5
-        [ResponseType(typeof(CarInfo))]
-        public IHttpActionResult DeleteCarInfo(int id)
+        public virtual DbSet<CarInfo> CarInfoes { get; set; }
+        public virtual DbSet<CarTransmissionType> CarTransmissionTypes { get; set; }
+        public virtual DbSet<CarType> CarTypes { get; set; }
+        public virtual DbSet<Manufacturer> Manufacturers { get; set; }
+        public virtual DbSet<RoleTable> RoleTables { get; set; }
+        public virtual DbSet<UserTable> UserTables { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CarInfo>()
+                .Property(e => e.Engine)
+                .IsFixedLength()
+                .IsUnicode(false);
 
-            var carInfo = (from car in db.CarInfoes
-                           where car.CarId == id
-                           select car).FirstOrDefault();
+            modelBuilder.Entity<CarTransmissionType>()
+                .HasMany(e => e.CarInfoes)
+                .WithRequired(e => e.CarTransmissionType)
+                .HasForeignKey(e => e.TransmissionTypeId)
+                .WillCascadeOnDelete(false);
 
-            if (carInfo == null)
-            {
-                return NotFound();
-            }
+            modelBuilder.Entity<CarType>()
+                .HasMany(e => e.CarInfoes)
+                .WithRequired(e => e.CarType)
+                .WillCascadeOnDelete(false);
 
-            db.CarInfoes.Remove(carInfo);
-            db.SaveChanges();
+            modelBuilder.Entity<Manufacturer>()
+                .Property(e => e.ContactNo)
+                .IsFixedLength()
+                .IsUnicode(false);
 
-            return Ok(carInfo);
-        }
+            modelBuilder.Entity<Manufacturer>()
+                .HasMany(e => e.CarInfoes)
+                .WithRequired(e => e.Manufacturer)
+                .WillCascadeOnDelete(false);
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private bool CarInfoExists(int id)
-        {
-            return db.CarInfoes.Count(e => e.CarId == id) > 0;
+            modelBuilder.Entity<RoleTable>()
+                .HasOptional(e => e.UserTable)
+                .WithRequired(e => e.RoleTable);
         }
     }
 }
+
+This is my INDEX VIEW
+@model IEnumerable<Car_Info_Management.Models.Entities.CarInfo>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        @*Added CarId View*@
+        <th>
+            @Html.DisplayNameFor(model => model.CarId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ManufacturerId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CarTransmissionType.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Engine)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BHP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Mileage)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Seat)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AirBagDetails)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BootSpace)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CarId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CarType.Type)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Manufacturer.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransmissionTypeId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Engine)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BHP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Mileage)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Seat)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AirBagDetails)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BootSpace)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Price)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.CarId }) |
+            @Html.ActionLink("Details", "Details", new { id = item.CarId }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.CarId })
+        </td>
+    </tr>
+}
+
+</table>
