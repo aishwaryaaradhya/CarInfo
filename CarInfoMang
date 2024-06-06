@@ -344,5 +344,33 @@ namespace Car_Info_Management.Controllers
                 return NotFound();
             }
 
-            return Ok(carInfo);
-        }
+            return Ok([ApiController]
+[Route("api/[controller]")]
+public class CarInfoController : ControllerBase
+{
+    private readonly ApplicationDbContext _context;
+
+    public CarInfoController(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetCarDetails()
+    {
+        var carDetails = await (from car in _context.CarInfos
+                                join carType in _context.CarTypes on car.CarTypeId equals carType.Id
+                                join carTransmission in _context.CarTransmissions on car.CarTransmissionId equals carTransmission.Id
+                                join manufacturer in _context.Manufacturers on car.ManufacturerId equals manufacturer.Id
+                                select new
+                                {
+                                    CarId = car.Id,
+                                    CarModel = car.Model,
+                                    CarType = carType.Type,
+                                    Transmission = carTransmission.Transmission,
+                                    Manufacturer = manufacturer.Name
+                                }).ToListAsync();
+
+        return Ok(carDetails);
+    }
+}
