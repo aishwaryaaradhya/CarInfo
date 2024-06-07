@@ -288,3 +288,153 @@ This is my INDEX VIEW
 }
 
 </table>
+
+
+
+
+
+
+
+
+
+
+public class CarInfoesController : Controller
+{
+    private readonly ApplicationDbContext db = new ApplicationDbContext();
+
+    // GET: CarInfoes/Edit/5
+    public ActionResult Edit(int id)
+    {
+        var carInfoViewModel = GetCarInfoes(id);
+
+        if (carInfoViewModel == null)
+        {
+            return HttpNotFound();
+        }
+
+        return View(carInfoViewModel);
+    }
+
+    // POST: CarInfoes/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult Edit(CarInfoViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            // Save the updated model
+            SaveModel(model);
+            return RedirectToAction("Index");
+        }
+
+        // Repopulate the dropdown lists if validation fails
+        model.Manufacturers = db.Manufacturers.Select(m => new SelectListItem
+        {
+            Value = m.Id.ToString(),
+            Text = m.Name,
+            Selected = m.Id == model.ManufacturerId
+        }).ToList();
+
+        model.CarTypes = db.CarTypes.Select(ct => new SelectListItem
+        {
+            Value = ct.Id.ToString(),
+            Text = ct.Type,
+            Selected = ct.Id == model.CarTypeId
+        }).ToList();
+
+        model.TransmissionTypes = db.CarTransmissionTypes.Select(tt => new SelectListItem
+        {
+            Value = tt.Id.ToString(),
+            Text = tt.Type,
+            Selected = tt.Id == model.TransmissionTypeId
+        }).ToList();
+
+        return View(model);
+    }
+
+    private void SaveModel(CarInfoViewModel model)
+    {
+        var car = db.CarInfoes.Find(model.CarId);
+        if (car != null)
+        {
+            car.ManufacturerId = model.ManufacturerId;
+            car.CarTypeId = model.CarTypeId;
+            car.TransmissionTypeId = model.TransmissionTypeId;
+            car.Engine = model.Engine;
+            car.VIN = model.VIN;
+            car.Mileage = model.Mileage;
+            car.Seat = model.Seat;
+            car.AirBagDetails = model.AirbagDetails;
+            car.BootSpace = model.Bootspace;
+            car.Price = model.Price;
+
+            db.Entry(car).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+    }
+
+    private CarInfoViewModel GetCarInfoes(int id)
+    {
+        var carDetails = (from car in db.CarInfoes
+                          join carType in db.CarTypes on car.CarTypeId equals carType.Id
+                          join carTransmission in db.CarTransmissionTypes on car.TransmissionTypeId equals carTransmission.Id
+                          join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
+                          where car.CarId == id
+                          select new
+                          {
+                              CarId = car.CarId,
+                              ManufacturerId = manufacturer.Id,
+                              CarTypeId = car.CarTypeId,
+                              CarTransmissionID = carTransmission.Id,
+                              TransmissionName = carTransmission.Type,
+                              ManufacturerName = manufacturer.Name,
+                              Engine = car.Engine,
+                              VIN = car.VIN,
+                              Mileage = car.Mileage,
+                              Seat = car.Seat,
+                              AirbagDetails = car.AirBagDetails,
+                              Bootspace = car.BootSpace,
+                              Price = car.Price
+                          }).FirstOrDefault();
+
+        if (carDetails == null)
+        {
+            return null; // Handle the case where the car is not found
+        }
+
+        return new CarInfoViewModel
+        {
+            CarId = carDetails.CarId,
+            ManufacturerId = carDetails.ManufacturerId,
+            ManufacturerName = carDetails.ManufacturerName,
+            CarTypeId = carDetails.CarTypeId,
+            TransmissionTypeId = carDetails.CarTransmissionID,
+            TransmissionTypeName = carDetails.TransmissionName,
+            Engine = carDetails.Engine,
+            VIN = carDetails.VIN,
+            Mileage = carDetails.Mileage,
+            Seat = carDetails.Seat,
+            AirbagDetails = carDetails.AirbagDetails,
+            Bootspace = carDetails.Bootspace,
+            Price = carDetails.Price,
+            Manufacturers = db.Manufacturers.Select(m => new SelectListItem
+            {
+                Value = m.Id.ToString(),
+                Text = m.Name,
+                Selected = m.Id == carDetails.ManufacturerId
+            }).ToList(),
+            CarTypes = db.CarTypes.Select(ct => new SelectListItem
+            {
+                Value = ct.Id.ToString(),
+                Text = ct.Type,
+                Selected = ct.Id == carDetails.CarTypeId
+            }).ToList(),
+            TransmissionTypes = db.CarTransmissionTypes.Select(tt => new SelectListItem
+            {
+                Value = tt.Id.ToString(),
+                Text = tt.Type,
+                Selected = tt.Id == carDetails.CarTransmissionID
+            }).ToList()
+        };
+    }
+}
