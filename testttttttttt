@@ -517,3 +517,73 @@ end
 GO
 
 
+
+
+========
+var result = context.CarInfo
+    .Where(c => c.CarId == carId)
+    .Select(c => new
+    {
+        ManufacturerName = context.Manufacturer
+            .Where(m => m.Id == c.ManufacturerId)
+            .Select(m => m.Name)
+            .FirstOrDefault(),
+        Transmission = context.CarTransmissionType
+            .Where(t => t.Id == c.TransmissiontypeID)
+            .Select(t => t.Type)
+            .FirstOrDefault(),
+        CarType = context.CarType
+            .Where(ct => ct.Id == c.CarTypeId)
+            .Select(ct => ct.Type)
+            .FirstOrDefault()
+    })
+    .FirstOrDefault();
+
+if (result != null)
+{
+    var car = context.CarInfo
+        .Where(c => c.CarId == carId)
+        .FirstOrDefault();
+
+    car.ManufacturerId = manufacturerId;
+    car.CarTypeId = carTypeId;
+    car.TransmissiontypeID = transmissionTypeId;
+    car.ManufacturerName = result.ManufacturerName;
+    car.Model = model;
+    car.Type = result.CarType;
+    car.Engine = engine;
+    car.BHP = bhp;
+    car.Transmission = result.Transmission;
+    car.Mileage = mileage;
+    car.Seat = seats;
+    car.AirBagDetails = airBagDetails;
+    car.BootSpace = bootSpace;
+    car.Price = price;
+
+    context.SaveChanges();
+
+    result = 1;
+}
+else
+{
+    result = 0;
+}
+
+// Execute the LINQ query
+var carId = 1;
+var manufacturerId = 1;
+var carTypeId = 1;
+var transmissionTypeId = 1;
+var model = "Model";
+var engine = "Engine";
+var bhp = 200;
+var mileage = 10000;
+var seats = 5;
+var airBagDetails = 2;
+var bootSpace = 500;
+var price = 20000;
+
+var result = context.AdminUpdateCar(carId, manufacturerId, carTypeId, transmissionTypeId, model, engine, bhp, mileage, seats, airBagDetails, bootSpace, price);
+
+
+
