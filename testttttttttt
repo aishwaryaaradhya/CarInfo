@@ -1,379 +1,193 @@
-This is my API Controller:
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
-using Car_Info_Management.Models.Entities;
+/////////////////////////////////////////////EDIT VIEW////////////////////////////////////////////////////////////////////////////////////////////////////
+@model Car_Info_Management.Models.Entities.CarInfoViewModel
 
-namespace Car_Info_Management.Controllers
+
+@using (Html.BeginForm())
 {
-    public class CarInfoesController : ApiController
-    {
-        private Car1 db = new Car1();
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>CarInfo</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.CarId)
 
-        // GET:api/Values
+    <div class="form-group">
+        @Html.HiddenFor(model => model.ManufacturerId)
+        @Html.LabelFor(model => model.ManufacturerName, "ManufacturerId", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.ManufacturerName, Model.Manufacturers, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ManufacturerId, "", new { @class = "text-danger" })
+        </div>
+    </div>
 
-        //public IEnumerable<CarInfo> GetCarInfoes()
-        public IEnumerable<object> GetCarInfoes()
-        {
-            var carDetails = (from car in db.CarInfoes
-                              join carType in db.CarTypes on car.CarTypeId equals carType.Id
-                              join carTransmission in db.CarTransmissionTypes on car.TransmissionTypeId equals carTransmission.Id
-                              join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
-                              select new
-                              {
-                                  carId= car.CarId,
-                                  ManufacturerId = manufacturer.Id,
-                                  carTypeId = car.CarTypeId,
-                                  TransmissionID = car.CarTransmissionType.Id,
-                                  carTypeName = carType.Type,                                 
-                                  TransmissionName = carTransmission.Type,
-                                  Manufacturername = manufacturer.Name,
-                                  carEngine = car.Engine,
-                                  carBHP = car.BHP,
-                                  carMileage = car.Mileage,
-                                  carSeat = car.Seat,
-                                  carAirbagDetails = car.AirBagDetails,
-                                  carBootspace = car.BootSpace,
-                                  carPrice = car.Price
-                              }).ToList();
+    <div class="form-group">
+        @Html.HiddenFor(model => model.CarTypeId)
+        @Html.LabelFor(model => model.CarTypeName, "CarTypeId", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.CarTypeId, Model.CarTypes, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.CarTypeId, "", new { @class = "text-danger" })
+        </div>
+    </div>
 
-            return carDetails;
-        }
+        <div class="form-group">
+            @Html.LabelFor(model => model.TransmissionTypeName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.TransmissionTypeId)
+                @*@Html.EditorFor(model => model.TransmissionTypeName, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.DropDownListFor(model => model.TransmissionTypeName, Model.TransmisiionType, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TransmissionTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Engine, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Engine, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Engine, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BHP, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BHP, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BHP, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Mileage, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Mileage, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Mileage, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Seat, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Seat, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Seat, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AirBagDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.AirBagDetails, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.AirBagDetails, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BootSpace, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BootSpace, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BootSpace, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
 }
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }
 
-This is my MVC CONTROLLER==========================================
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Http;
-using System.Web;
-using System.Web.Mvc;
-using CarInfoManagement_MVCController.Models;
-using Car_Info_Management.Models.Entities;
-//add namespace 
-using Car_Info_Management.Controllers;
-using System.Web.Compilation;
-using Newtonsoft.Json;
-using System.Dynamic;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
-namespace CarInfoManagement_MVCController.Controllers
+
+
+
+
+/////////////////////////////////////////////////////////////EDIT CONTROLLER FOR LIST/////////////////////////////////////////////////////////////////////////////////////////
+public async Task<ActionResult> Edit(int? id)
 {
-    public class CarInfoesController : Controller
+    var carInfoViewModel = new CarInfoViewModel();
+    HttpResponseMessage response = await HelperEdit(id.Value);
+    if (response.IsSuccessStatusCode)
     {
-        
-
-
-        // GET: CarInfoes
-        public async Task<ActionResult> Index()
-        {
-            List<CarInfo> carInfoList =new List<CarInfo>();
-            using(var client=new HttpClient())
-            {
-                client.BaseAddress = new Uri("https://localhost:44388/api/");
-                var response = await client.GetAsync("CarInfoes");
-                if (response.IsSuccessStatusCode)
-                {
-                    carInfoList = await response.Content.ReadAsAsync<List<CarInfo>>();
-                    return View(carInfoList);
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "Server Error.Please Contact admin");
-                }
-            }
-            //return View(carInfoList);
-            return View(carInfoList);
-        }
-
-This si my carInfo model==================================
-namespace Car_Info_Management.Models.Entities
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
-
-    [Table("CarInfo")]
-    public partial class CarInfo
-    {
-        [Key]
-        public int CarId { get; set; }
-
-        public int ManufacturerId { get; set; }
-
-        public int CarTypeId { get; set; }
-
-        public int TransmissionTypeId { get; set; }
-
-        [Required]
-        [StringLength(4)]
-        public string Engine { get; set; }
-
-        public int BHP { get; set; }
-
-        public int Mileage { get; set; }
-
-        public int Seat { get; set; }
-
-        public int AirBagDetails { get; set; }
-
-        public int BootSpace { get; set; }
-
-        public decimal Price { get; set; }
-
-        public virtual CarType CarType { get; set; }
-
-        public virtual CarTransmissionType CarTransmissionType { get; set; }
-
-        public virtual Manufacturer Manufacturer { get; set; }
+        //ViewData["ManufacturerId"] = new SelectList(manufacturer, "Id", "Name");
+        var data = await response.Content.ReadAsStringAsync();
+        var carInfolist = JsonConvert.DeserializeObject<CarInfoViewModel>(data);
+        ViewData["ManufacturerId"] = new SelectList(db.Manufacturers, "Id", "Name", carInfoViewModel.ManufacturerId);
+        ViewData["CarTypeId"] = new SelectList(db.CarTypes, "Id", "Type", carInfoViewModel.CarTypeId);
+        ViewData["TransmissionTypeId"] = new SelectList(db.CarTransmissionTypes, "Id", "Type", carInfoViewModel.CarTypeId);
+        return View(carInfolist);
     }
+    return View();
 }
 
-This is my DBContext===========
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Linq;
-
-namespace Car_Info_Management.Models.Entities
+private async Task<HttpResponseMessage> HelperEdit(int id)
 {
-    public partial class Car1 : DbContext
-    {
-        public Car1()
-            : base("name=car1")
-        {
-            Configuration.LazyLoadingEnabled = false;
-        }
+    HttpResponseMessage response = await _httpClient.GetAsync($"CarInfoes/{id}");
 
-        public virtual DbSet<CarInfo> CarInfoes { get; set; }
-        public virtual DbSet<CarTransmissionType> CarTransmissionTypes { get; set; }
-        public virtual DbSet<CarType> CarTypes { get; set; }
-        public virtual DbSet<Manufacturer> Manufacturers { get; set; }
-        public virtual DbSet<RoleTable> RoleTables { get; set; }
-        public virtual DbSet<UserTable> UserTables { get; set; }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<CarInfo>()
-                .Property(e => e.Engine)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<CarTransmissionType>()
-                .HasMany(e => e.CarInfoes)
-                .WithRequired(e => e.CarTransmissionType)
-                .HasForeignKey(e => e.TransmissionTypeId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<CarType>()
-                .HasMany(e => e.CarInfoes)
-                .WithRequired(e => e.CarType)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<Manufacturer>()
-                .Property(e => e.ContactNo)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Manufacturer>()
-                .HasMany(e => e.CarInfoes)
-                .WithRequired(e => e.Manufacturer)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<RoleTable>()
-                .HasOptional(e => e.UserTable)
-                .WithRequired(e => e.RoleTable);
-        }
-    }
+    return response;
 }
-
-This is my INDEX VIEW
-@model IEnumerable<Car_Info_Management.Models.Entities.CarInfo>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        @*Added CarId View*@
-        <th>
-            @Html.DisplayNameFor(model => model.CarId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ManufacturerId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CarTransmissionType.Id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Engine)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BHP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Mileage)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Seat)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AirBagDetails)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BootSpace)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Price)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.CarId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CarType.Type)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Manufacturer.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TransmissionTypeId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Engine)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BHP)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Mileage)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Seat)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AirBagDetails)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BootSpace)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Price)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.CarId }) |
-            @Html.ActionLink("Details", "Details", new { id = item.CarId }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.CarId })
-        </td>
-    </tr>
-}
-
-</table>
-
-
-
-
-
-
-
-
-
-
-public class CarInfoesController : Controller
+///////////////////////////////////////////////////////////////EDIT CONTROLLER FOR POST///////////////////////////////////////////////////////////////////////////////////////////
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<ActionResult> Edit([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfoViewModel carInfo)
 {
-    private readonly ApplicationDbContext db = new ApplicationDbContext();
 
-    // GET: CarInfoes/Edit/5
-    public ActionResult Edit(int id)
+    //HttpResponseMessage response = await HelperPostEdit();
+    if (ModelState.IsValid)
     {
-        var carInfoViewModel = GetCarInfoes(id);
-
-        if (carInfoViewModel == null)
+        //HttpResponseMessage response = await HelperEditAsync(carInfo);
+        bool isUpdated = await HelperEditAsync(carInfo);
+        if (isUpdated)
         {
-            return HttpNotFound();
-        }
-
-        return View(carInfoViewModel);
-    }
-
-    // POST: CarInfoes/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Edit(CarInfoViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            // Save the updated model
-            SaveModel(model);
             return RedirectToAction("Index");
         }
-
-        // Repopulate the dropdown lists if validation fails
-        model.Manufacturers = db.Manufacturers.Select(m => new SelectListItem
-        {
-            Value = m.Id.ToString(),
-            Text = m.Name,
-            Selected = m.Id == model.ManufacturerId
-        }).ToList();
-
-        model.CarTypes = db.CarTypes.Select(ct => new SelectListItem
-        {
-            Value = ct.Id.ToString(),
-            Text = ct.Type,
-            Selected = ct.Id == model.CarTypeId
-        }).ToList();
-
-        model.TransmissionTypes = db.CarTransmissionTypes.Select(tt => new SelectListItem
-        {
-            Value = tt.Id.ToString(),
-            Text = tt.Type,
-            Selected = tt.Id == model.TransmissionTypeId
-        }).ToList();
-
-        return View(model);
+        ModelState.AddModelError(string.Empty, "Sever Error.Please Contact Admin");
     }
+    return View(carInfo);
 
-    private void SaveModel(CarInfoViewModel model)
+}
+
+
+private async Task<bool> HelperEditAsync(CarInfoViewModel carInfo)
+{
+    var content = new StringContent(JsonConvert.SerializeObject(carInfo), System.Text.Encoding.UTF8, "application/json");
+    var response = await _httpClient.PutAsync($"CarInfoes/{carInfo.CarId}", content);
+
+    return response.IsSuccessStatusCode;
+}
+/////////////////////////////////////////////////////////API CONTROLLER FOR EDIT/////////////////////////////////////////////////////////////////////////////////////////
+[ResponseType(typeof(void))]
+public IHttpActionResult PutCarInfo(int id, CarInfoViewModel carInfo)
+{
+
+    if (!ModelState.IsValid)
     {
-        var car = db.CarInfoes.Find(model.CarId);
-        if (car != null)
-        {
-            car.ManufacturerId = model.ManufacturerId;
-            car.CarTypeId = model.CarTypeId;
-            car.TransmissionTypeId = model.TransmissionTypeId;
-            car.Engine = model.Engine;
-            car.VIN = model.VIN;
-            car.Mileage = model.Mileage;
-            car.Seat = model.Seat;
-            car.AirBagDetails = model.AirbagDetails;
-            car.BootSpace = model.Bootspace;
-            car.Price = model.Price;
-
-            db.Entry(car).State = EntityState.Modified;
-            db.SaveChanges();
-        }
+        return BadRequest(ModelState);
     }
 
-    private CarInfoViewModel GetCarInfoes(int id)
+    if (id != carInfo.CarId)
+    {
+        return BadRequest();
+    }
+
+    db.Entry(carInfo).State = EntityState.Modified;
+
+    try
     {
         var carDetails = (from car in db.CarInfoes
                           join carType in db.CarTypes on car.CarTypeId equals carType.Id
@@ -382,208 +196,33 @@ public class CarInfoesController : Controller
                           where car.CarId == id
                           select new
                           {
-                              CarId = car.CarId,
-                              ManufacturerId = manufacturer.Id,
+                              CarId = carInfo.CarId,
+                              ManufacturerId = car.ManufacturerId,
                               CarTypeId = car.CarTypeId,
-                              CarTransmissionID = carTransmission.Id,
-                              TransmissionName = carTransmission.Type,
-                              ManufacturerName = manufacturer.Name,
+                              CarTransmissionID = car.TransmissionTypeId,                                    
                               Engine = car.Engine,
-                              VIN = car.VIN,
+                              BHP = car.BHP,
                               Mileage = car.Mileage,
                               Seat = car.Seat,
                               AirbagDetails = car.AirBagDetails,
                               Bootspace = car.BootSpace,
                               Price = car.Price
-                          }).FirstOrDefault();
-
-        if (carDetails == null)
-        {
-            return null; // Handle the case where the car is not found
-        }
-
-        return new CarInfoViewModel
-        {
-            CarId = carDetails.CarId,
-            ManufacturerId = carDetails.ManufacturerId,
-            ManufacturerName = carDetails.ManufacturerName,
-            CarTypeId = carDetails.CarTypeId,
-            TransmissionTypeId = carDetails.CarTransmissionID,
-            TransmissionTypeName = carDetails.TransmissionName,
-            Engine = carDetails.Engine,
-            VIN = carDetails.VIN,
-            Mileage = carDetails.Mileage,
-            Seat = carDetails.Seat,
-            AirbagDetails = carDetails.AirbagDetails,
-            Bootspace = carDetails.Bootspace,
-            Price = carDetails.Price,
-            Manufacturers = db.Manufacturers.Select(m => new SelectListItem
-            {
-                Value = m.Id.ToString(),
-                Text = m.Name,
-                Selected = m.Id == carDetails.ManufacturerId
-            }).ToList(),
-            CarTypes = db.CarTypes.Select(ct => new SelectListItem
-            {
-                Value = ct.Id.ToString(),
-                Text = ct.Type,
-                Selected = ct.Id == carDetails.CarTypeId
-            }).ToList(),
-            TransmissionTypes = db.CarTransmissionTypes.Select(tt => new SelectListItem
-            {
-                Value = tt.Id.ToString(),
-                Text = tt.Type,
-                Selected = tt.Id == carDetails.CarTransmissionID
-            }).ToList()
-        };
+                          }).ToList();
+        db.SaveChanges();
     }
-}
-==========================================================
-USE [Car_Management]
-GO
-
-/****** Object:  StoredProcedure [dbo].[AdminUpdateCar]    Script Date: 6/7/2024 8:17:04 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE  PROCEDURE [dbo].[AdminUpdateCar](
-    @CarId int,
-    @ManufacturerId int,
-    @CarTypeId int,
-    @TransmissiontypeID int,
-    @Model nvarchar(100),
-    @Engine nvarchar(4),
-    @BHP int,
-    @Mileage int,
-    @Seats int,
-    @AirBagDetails int,
-    @BootSpace int,
-    @Price decimal(18,2),
-    @result int output
-)
-AS 
-BEGIN
-    -- Declare variables to hold the ManufacturerName, Transmission, and CarType
-    DECLARE @ManufacturerName nvarchar(100);
-    DECLARE @Transmission nvarchar(100);
-    DECLARE @CarType nvarchar(100);
-
-    -- Select the ManufacturerName from the Manufacturer table
-    SELECT @ManufacturerName = Name
-    FROM Manufacturer
-    WHERE Id = @ManufacturerId;
-
-    -- Select the Transmission from the CarTransmissionType table
-    SELECT @Transmission = Type
-    FROM CarTransmissionType
-    WHERE Id = @TransmissiontypeID;
-
-    -- Select the CarType from the CarType table
-    SELECT @CarType = Type
-    FROM CarType
-    WHERE Id = @CarTypeId;
-
-    -- Check if the CarId exists in the Car table
-    IF EXISTS (SELECT 1 FROM [dbo].[CarInfo] WHERE CarId = @CarId)
-    BEGIN
-        -- Update the values in the Car table
-        UPDATE CarInfo
-        SET ManufacturerId = @ManufacturerId,
-            CarTypeId = @CarTypeId,
-            TransmissiontypeID = @TransmissiontypeID,
-            ManufacturerName = @ManufacturerName,
-            Model = @Model,
-            Type = @CarType,
-            Engine = @Engine,
-            BHP = @BHP,
-            Transmission = @Transmission,
-            Mileage = @Mileage,
-            Seat = @Seats,
-            [AirBagDetails]= @AirBagDetails,
-            BootSpace = @BootSpace,
-            Price = @Price
-        WHERE CarId = @CarId;
-
-        SET @result = 1;
-    END
-    ELSE
-    BEGIN
-        SET @result = 0;
-    END
-end
-GO
-
-
-
-
-========
-var result = context.CarInfo
-    .Where(c => c.CarId == carId)
-    .Select(c => new
+    catch (DbUpdateConcurrencyException)
     {
-        ManufacturerName = context.Manufacturer
-            .Where(m => m.Id == c.ManufacturerId)
-            .Select(m => m.Name)
-            .FirstOrDefault(),
-        Transmission = context.CarTransmissionType
-            .Where(t => t.Id == c.TransmissiontypeID)
-            .Select(t => t.Type)
-            .FirstOrDefault(),
-        CarType = context.CarType
-            .Where(ct => ct.Id == c.CarTypeId)
-            .Select(ct => ct.Type)
-            .FirstOrDefault()
-    })
-    .FirstOrDefault();
+        if (!CarInfoExists(id))
+        {
+            return NotFound();
+        }
+        else
+        {
+            throw;
+        }
+    }
 
-if (result != null)
-{
-    var car = context.CarInfo
-        .Where(c => c.CarId == carId)
-        .FirstOrDefault();
-
-    car.ManufacturerId = manufacturerId;
-    car.CarTypeId = carTypeId;
-    car.TransmissiontypeID = transmissionTypeId;
-    car.ManufacturerName = result.ManufacturerName;
-    car.Model = model;
-    car.Type = result.CarType;
-    car.Engine = engine;
-    car.BHP = bhp;
-    car.Transmission = result.Transmission;
-    car.Mileage = mileage;
-    car.Seat = seats;
-    car.AirBagDetails = airBagDetails;
-    car.BootSpace = bootSpace;
-    car.Price = price;
-
-    context.SaveChanges();
-
-    result = 1;
+    return StatusCode(HttpStatusCode.NoContent);
 }
-else
-{
-    result = 0;
-}
-
-// Execute the LINQ query
-var carId = 1;
-var manufacturerId = 1;
-var carTypeId = 1;
-var transmissionTypeId = 1;
-var model = "Model";
-var engine = "Engine";
-var bhp = 200;
-var mileage = 10000;
-var seats = 5;
-var airBagDetails = 2;
-var bootSpace = 500;
-var price = 20000;
-
-var result = context.AdminUpdateCar(carId, manufacturerId, carTypeId, transmissionTypeId, model, engine, bhp, mileage, seats, airBagDetails, bootSpace, price);
-
 
 
