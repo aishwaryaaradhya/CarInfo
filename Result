@@ -5,6 +5,56 @@
         {
             if (ModelState.IsValid)
             {
+                var response = await _httpClient.PostAsJsonAsync("CarInfoes", carInfo);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                ModelState.AddModelError(string.Empty, "An error occurred while saving the data.");
+            }
+
+            var manufacturers = await GetDropdownDataAsync<Manufacturer>("CarInfoes/Manufacturers");
+            var carTypes = await GetDropdownDataAsync<CarType>("CarInfoes/CarTypes");
+            var transmissionTypes = await GetDropdownDataAsync<CarTransmissionType>("CarInfoes/TransmissionTypes");
+
+            ViewBag.ManufacturerId = new SelectList(manufacturers, "Id", "Name", carInfo.ManufacturerId);
+            ViewBag.CarTypeId = new SelectList(carTypes, "Id", "Type", carInfo.CarTypeId);
+            ViewBag.TransmissionTypeId = new SelectList(transmissionTypes, "Id", "Type", carInfo.TransmissionTypeId);
+
+            return View(carInfo);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// POST: CarInfoes/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfo carInfo)
+        {
+            if (ModelState.IsValid)
+            {
                 var response = await _httpClient.PostAsJsonAsync("api/CarInfoes", carInfo);
                 if (response.IsSuccessStatusCode)
                 {
