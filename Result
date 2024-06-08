@@ -1,3 +1,39 @@
+// POST: CarInfoes/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfo carInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/CarInfoes", carInfo);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            // If we got this far, something failed, redisplay form with dropdown data
+            ViewBag.ManufacturerId = new SelectList(await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers"), "Id", "Name", carInfo.ManufacturerId);
+            ViewBag.CarTypeId = new SelectList(await GetDropdownDataAsync<CarType>("api/DropdownData/CarTypes"), "Id", "Type", carInfo.CarTypeId);
+            ViewBag.TransmissionTypeId = new SelectList(await GetDropdownDataAsync<CarTransmissionType>("api/DropdownData/TransmissionTypes"), "Id", "Type", carInfo.TransmissionTypeId);
+            return View(carInfo);
+        }
+
+// POST: api/CarInfoes
+        [HttpPost]
+        [ResponseType(typeof(CarInfo))]
+        public IHttpActionResult PostCarInfo(CarInfo carInfo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.CarInfoes.Add(carInfo);
+            db.SaveChanges();
+
+            return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
+        }
 public async Task<ActionResult> Create()
         {
             var manufacturers = await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers");
