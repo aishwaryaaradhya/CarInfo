@@ -1,0 +1,19 @@
+public async Task<ActionResult> Create()
+        {
+            var manufacturers = await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers");
+            var carTypes = await GetDropdownDataAsync<CarType>("api/DropdownData/CarTypes");
+            var transmissionTypes = await GetDropdownDataAsync<CarTransmissionType>("api/DropdownData/TransmissionTypes");
+
+            ViewBag.ManufacturerId = new SelectList(manufacturers, "Id", "Name");
+            ViewBag.CarTypeId = new SelectList(carTypes, "Id", "Type");
+            ViewBag.TransmissionTypeId = new SelectList(transmissionTypes, "Id", "Type");
+            return View();
+        }
+
+        private async Task<List<T>> GetDropdownDataAsync<T>(string endpoint)
+        {
+            var response = await _httpClient.GetAsync(endpoint);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<T>>(json);
+        }
