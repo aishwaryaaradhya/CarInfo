@@ -17,3 +17,46 @@ public async Task<ActionResult> Create()
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<T>>(json);
         }
+
+
+//////////////////////////
+[HttpGet]
+        [Route("api/DropdownData/Manufacturers")]
+        public IHttpActionResult GetManufacturers()
+        {
+            var manufacturers = db.Manufacturers.Select(m => new { m.Id, m.Name }).ToList();
+            return Ok(manufacturers);
+        }
+
+        [HttpGet]
+        [Route("api/DropdownData/CarTypes")]
+        public IHttpActionResult GetCarTypes()
+        {
+            var carTypes = db.CarTypes.Select(ct => new { ct.Id, ct.Type }).ToList();
+            return Ok(carTypes);
+        }
+
+        [HttpGet]
+        [Route("api/DropdownData/TransmissionTypes")]
+        public IHttpActionResult GetTransmissionTypes()
+        {
+            var transmissionTypes = db.CarTransmissionTypes.Select(tt => new { tt.Id, tt.Type }).ToList();
+            return Ok(transmissionTypes);
+        }
+
+//////////////////////////////////
+// POST: api/CarInfoes
+        [HttpPost]
+        [ResponseType(typeof(CarInfo))]
+        public IHttpActionResult PostCarInfo(CarInfo carInfo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.CarInfoes.Add(carInfo);
+            db.SaveChanges();
+
+            return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
+        }
