@@ -1,3 +1,28 @@
+ViewBag.ManufacturerId = new SelectList(await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers"), "Id", "Name", carInfo.ManufacturerId);
+            ViewBag.CarTypeId = new SelectList(await GetDropdownDataAsync<CarType>("api/DropdownData/CarTypes"), "Id", "Type", carInfo.CarTypeId);
+            ViewBag.TransmissionTypeId = new SelectList(await GetDropdownDataAsync<CarTransmissionType>("api/DropdownData/TransmissionTypes"), "Id", "Type", carInfo.TransmissionTypeId);
+            return View(carInfo);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // POST: CarInfoes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
