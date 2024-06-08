@@ -1,234 +1,36 @@
-/////////////////////////////////////////////EDIT VIEW////////////////////////////////////////////////////////////////////////////////////////////////////
-@model Car_Info_Management.Models.Entities.CarInfoViewModel
-
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>CarInfo</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.CarId)
-
-    <div class="form-group">
-        @Html.HiddenFor(model => model.ManufacturerId)
-        @Html.LabelFor(model => model.ManufacturerName, "ManufacturerId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.ManufacturerName, Model.Manufacturers, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.ManufacturerId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.HiddenFor(model => model.CarTypeId)
-        @Html.LabelFor(model => model.CarTypeName, "CarTypeId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.CarTypeId, Model.CarTypes, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.CarTypeId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TransmissionTypeName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.HiddenFor(model => model.TransmissionTypeId)
-                @*@Html.EditorFor(model => model.TransmissionTypeName, new { htmlAttributes = new { @class = "form-control" } })*@
-                @Html.DropDownListFor(model => model.TransmissionTypeName, Model.TransmisiionType, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.TransmissionTypeId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Engine, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Engine, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Engine, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.BHP, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.BHP, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BHP, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Mileage, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Mileage, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Mileage, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Seat, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Seat, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Seat, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.AirBagDetails, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.AirBagDetails, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.AirBagDetails, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.BootSpace, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.BootSpace, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BootSpace, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////EDIT CONTROLLER FOR LIST/////////////////////////////////////////////////////////////////////////////////////////
-public async Task<ActionResult> Edit(int? id)
-{
-    var carInfoViewModel = new CarInfoViewModel();
-    HttpResponseMessage response = await HelperEdit(id.Value);
-    if (response.IsSuccessStatusCode)
-    {
-        //ViewData["ManufacturerId"] = new SelectList(manufacturer, "Id", "Name");
-        var data = await response.Content.ReadAsStringAsync();
-        var carInfolist = JsonConvert.DeserializeObject<CarInfoViewModel>(data);
-        ViewData["ManufacturerId"] = new SelectList(db.Manufacturers, "Id", "Name", carInfoViewModel.ManufacturerId);
-        ViewData["CarTypeId"] = new SelectList(db.CarTypes, "Id", "Type", carInfoViewModel.CarTypeId);
-        ViewData["TransmissionTypeId"] = new SelectList(db.CarTransmissionTypes, "Id", "Type", carInfoViewModel.CarTypeId);
-        return View(carInfolist);
-    }
-    return View();
-}
-
-private async Task<HttpResponseMessage> HelperEdit(int id)
-{
-    HttpResponseMessage response = await _httpClient.GetAsync($"CarInfoes/{id}");
-
-    return response;
-}
-///////////////////////////////////////////////////////////////EDIT CONTROLLER FOR POST///////////////////////////////////////////////////////////////////////////////////////////
+-----------------------------------------------MVC CONTROLLER---------------------------------------------------
 [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<ActionResult> Edit([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfoViewModel carInfo)
-{
 
-    //HttpResponseMessage response = await HelperPostEdit();
+public async Task<ActionResult> Create([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfo carInfo)
+{
     if (ModelState.IsValid)
     {
-        //HttpResponseMessage response = await HelperEditAsync(carInfo);
-        bool isUpdated = await HelperEditAsync(carInfo);
-        if (isUpdated)
+        var response = await _httpClient.PostAsJsonAsync("CarInfoes", carInfo);
+
+        if (response.IsSuccessStatusCode)
         {
             return RedirectToAction("Index");
         }
-        ModelState.AddModelError(string.Empty, "Sever Error.Please Contact Admin");
+
+        ModelState.AddModelError(string.Empty, "An error occurred while saving the data.");
     }
+
+    ViewData["ManufacturerId"] = new SelectList(await GetDropdownDataAsync<Manufacturer>("CarInfoes/Manufacturers"), "Id", "Name", carInfo.ManufacturerId);
+    ViewData["CarTypeId"] = new SelectList(await GetDropdownDataAsync<CarType>("CarInfoes/CarTypes"), "Id", "Type", carInfo.CarTypeId);
+    ViewData["TransmissionTypeId"] = new SelectList(await GetDropdownDataAsync<CarTransmissionType>("CarInfoes/TransmissionTypes"), "Id", "Type", carInfo.TransmissionTypeId);
     return View(carInfo);
+}
+------------------------------------------------CREATE VIEW-------------------------------------------------------------------------------------
+@model Car_Info_Management.Models.Entities.CarInfo
 
+@{
+    ViewBag.Title = "Create";
 }
 
-
-private async Task<bool> HelperEditAsync(CarInfoViewModel carInfo)
-{
-    var content = new StringContent(JsonConvert.SerializeObject(carInfo), System.Text.Encoding.UTF8, "application/json");
-    var response = await _httpClient.PutAsync($"CarInfoes/{carInfo.CarId}", content);
-
-    return response.IsSuccessStatusCode;
-}
-/////////////////////////////////////////////////////////API CONTROLLER FOR EDIT/////////////////////////////////////////////////////////////////////////////////////////
-[ResponseType(typeof(void))]
-public IHttpActionResult PutCarInfo(int id, CarInfoViewModel carInfo)
-{
-
-    if (!ModelState.IsValid)
-    {
-        return BadRequest(ModelState);
-    }
-
-    if (id != carInfo.CarId)
-    {
-        return BadRequest();
-    }
-
-    db.Entry(carInfo).State = EntityState.Modified;
-
-    try
-    {
-        var carDetails = (from car in db.CarInfoes
-                          join carType in db.CarTypes on car.CarTypeId equals carType.Id
-                          join carTransmission in db.CarTransmissionTypes on car.TransmissionTypeId equals carTransmission.Id
-                          join manufacturer in db.Manufacturers on car.ManufacturerId equals manufacturer.Id
-                          where car.CarId == id
-                          select new
-                          {
-                              CarId = carInfo.CarId,
-                              ManufacturerId = car.ManufacturerId,
-                              CarTypeId = car.CarTypeId,
-                              CarTransmissionID = car.TransmissionTypeId,                                    
-                              Engine = car.Engine,
-                              BHP = car.BHP,
-                              Mileage = car.Mileage,
-                              Seat = car.Seat,
-                              AirbagDetails = car.AirBagDetails,
-                              Bootspace = car.BootSpace,
-                              Price = car.Price
-                          }).ToList();
-        db.SaveChanges();
-    }
-    catch (DbUpdateConcurrencyException)
-    {
-        if (!CarInfoExists(id))
-        {
-            return NotFound();
-        }
-        else
-        {
-            throw;
-        }
-    }
-
-    return StatusCode(HttpStatusCode.NoContent);
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@model Car_Info_Management.Models.Entities.CarInfoViewModel
+<h2>Create</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
     
@@ -236,36 +38,29 @@ public IHttpActionResult PutCarInfo(int id, CarInfoViewModel carInfo)
         <h4>CarInfo</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.CarId)
-
     <div class="form-group">
-        @*@Html.HiddenFor(model => model.ManufacturerId)*@
-        @Html.LabelFor(model => model.ManufacturerName, "ManufacturerId", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.HiddenFor(model => model.ManufacturerId)
+        @Html.LabelFor(model => model.ManufacturerId, "Manufacturer", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownList("ManufacturerId", ViewData["Manufacturers"] as SelectList, new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.ManufacturerName, "", new { @class = "text-danger" })
-        </div>
-        @*<div class="col-md-10">
-            @Html.DropDownListFor(model => model.ManufacturerId, ViewData["Manufacturers"] as SelectList, htmlAttributes: new { @class = "form-control" })
+            @Html.DropDownListFor(model => model.ManufacturerId, (SelectList)ViewData["ManufacturerId"], "Select Manufacturer", htmlAttributes: new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ManufacturerId, "", new { @class = "text-danger" })
-        </div>*@
+        </div>
     </div>
 
     <div class="form-group">
         @Html.HiddenFor(model => model.CarTypeId)
-        @Html.LabelFor(model => model.CarTypeName, "CarTypeId", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.CarTypeId, "Car Type", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownListFor(model => model.CarTypeId, ViewData["CarTypes"] as SelectList, new { @class = "form-control" })
+            @Html.DropDownListFor(model=>model.CarTypeId, (SelectList)ViewData["CarTypeId"], "Select Car Type", htmlAttributes: new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.CarTypeId, "", new { @class = "text-danger" })
         </div>
     </div>
 
     <div class="form-group">
         @Html.HiddenFor(model => model.TransmissionTypeId)
-        @Html.LabelFor(model => model.TransmissionTypeName, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.TransmissionTypeId, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @*@Html.EditorFor(model => model.TransmissionTypeName, new { htmlAttributes = new { @class = "form-control" } })*@
-            @Html.DropDownListFor(model => model.TransmissionTypeId, ViewData["TransmissionTypes"] as SelectList,new { @class = "form-control" })
+            @Html.DropDownListFor(model => model.TransmissionTypeId, (SelectList)ViewData["TransmissionTypeId"], "Select Transmission Type",new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessageFor(model => model.TransmissionTypeId, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -328,7 +123,7 @@ public IHttpActionResult PutCarInfo(int id, CarInfoViewModel carInfo)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </div>
     </div>
@@ -341,5 +136,44 @@ public IHttpActionResult PutCarInfo(int id, CarInfoViewModel carInfo)
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+-------------------------------------------------------API CREATE CONTROLLER WITH DROPDOWN -------------------------------------------------------
+[System.Web.Http.HttpGet]
+[System.Web.Http.Route("api/CarInfoes/Manufacturers")]
+public IHttpActionResult GetManufacturers()
+{
+    var manufacturers = db.Manufacturers.Select(m => new { m.Id, m.Name }).ToList();
+    return Ok(manufacturers);
+}
+
+[System.Web.Http.HttpGet]
+[System.Web.Http.Route("api/CarInfoes/CarTypes")]
+public IHttpActionResult GetCarTypes()
+{
+    var carTypes = db.CarTypes.Select(ct => new { ct.Id, ct.Type }).ToList();
+    return Ok(carTypes);
+}
+
+[System.Web.Http.HttpGet]
+[System.Web.Http.Route("api/CarInfoes/TransmissionTypes")]
+public IHttpActionResult GetTransmissionTypes()
+{
+    var transmissionTypes = db.CarTransmissionTypes.Select(tt => new { tt.Id, tt.Type }).ToList();
+    return Ok(transmissionTypes);
+}
 
 
+// POST: api/CarInfoes
+[System.Web.Http.HttpPost]
+[ResponseType(typeof(CarInfo))]
+public IHttpActionResult PostCarInfo(CarInfo carInfo)
+{
+    if (!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
+
+    db.CarInfoes.Add(carInfo);
+    db.SaveChanges();
+
+    return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
+}
