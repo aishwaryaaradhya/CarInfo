@@ -1,173 +1,107 @@
-ViewBag.ManufacturerId = new SelectList(await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers"), "Id", "Name", carInfo.ManufacturerId);
-            ViewBag.CarTypeId = new SelectList(await GetDropdownDataAsync<CarType>("api/DropdownData/CarTypes"), "Id", "Type", carInfo.CarTypeId);
-            ViewBag.TransmissionTypeId = new SelectList(await GetDropdownDataAsync<CarTransmissionType>("api/DropdownData/TransmissionTypes"), "Id", "Type", carInfo.TransmissionTypeId);
-            return View(carInfo);
+-------------------------------------------------------------API DELETE CONTROLLER--------------------------------------------------------------------
+// DELETE: api/CarInfoes/5
+[ResponseType(typeof(CarInfo))]
+public IHttpActionResult DeleteCarInfo(int id)
+{
+    var carInfo = db.CarInfoes.Find(id);
+    if (carInfo == null)
+    {
+        return NotFound();
+    }
 
+    db.CarInfoes.Remove(carInfo);
+    db.SaveChanges();
 
+    return Ok(carInfo);
+}
+-----------------------------------------------------------MVC DELETE CONTROLLER-------------------------------------------------------------------------
+// GET: CarInfoes/Delete/5
+public async Task<ActionResult> Delete(int? id)
+{
+    if (id == null)
+    {
+        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+    }
+    CarInfo carInfo = await db.CarInfoes.FindAsync(id);
+    if (carInfo == null)
+    {
+        return HttpNotFound();
+    }
+    return View(carInfo);
+}
 
+// POST: CarInfoes/Delete/5
+[HttpPost, ActionName("Delete")]
+[ValidateAntiForgeryToken]
+public async Task<ActionResult> DeleteConfirmed(int id)
+{
+    CarInfo carInfo = await db.CarInfoes.FindAsync(id);
+    if (carInfo != null)
+    {
+        db.CarInfoes.Remove(carInfo);
+        await db.SaveChangesAsync();
+    }
+    return RedirectToAction("Index");
+}
 
+protected override void Dispose(bool disposing)
+{
+    if (disposing)
+    {
+        db.Dispose();
+    }
+    base.Dispose(disposing);
+}
+---------------------------------------------------------------DELETE VIEW---------------------------------------------------------------
+@model Car_Info_Management.Models.Entities.CarInfo
 
+@{
+    ViewBag.Title = "Delete";
+}
 
+<h2>Delete</h2>
 
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>CarInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.CarType.Type)</dt>
+        <dd>@Html.DisplayFor(model => model.CarType.Type)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.Manufacturer.Name)</dt>
+        <dd>@Html.DisplayFor(model => model.Manufacturer.Name)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.TransmissionTypeId)</dt>
+        <dd>@Html.DisplayFor(model => model.TransmissionTypeId)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.Engine)</dt>
+        <dd>@Html.DisplayFor(model => model.Engine)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.BHP)</dt>
+        <dd>@Html.DisplayFor(model => model.BHP)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.Mileage)</dt>
+        <dd>@Html.DisplayFor(model => model.Mileage)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.Seat)</dt>
+        <dd>@Html.DisplayFor(model => model.Seat)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.AirBagDetails)</dt>
+        <dd>@Html.DisplayFor(model => model.AirBagDetails)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.BootSpace)</dt>
+        <dd>@Html.DisplayFor(model => model.BootSpace)</dd>
 
+        <dt>@Html.DisplayNameFor(model => model.Price)</dt>
+        <dd>@Html.DisplayFor(model => model.Price)</dd>
+    </dl>
 
-
-
-
-
-// POST: CarInfoes/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfo carInfo)
-        {
-            if (ModelState.IsValid)
-            {
-                var response = await _httpClient.PostAsJsonAsync("CarInfoes", carInfo);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-
-                ModelState.AddModelError(string.Empty, "An error occurred while saving the data.");
-            }
-
-            var manufacturers = await GetDropdownDataAsync<Manufacturer>("CarInfoes/Manufacturers");
-            var carTypes = await GetDropdownDataAsync<CarType>("CarInfoes/CarTypes");
-            var transmissionTypes = await GetDropdownDataAsync<CarTransmissionType>("CarInfoes/TransmissionTypes");
-
-            ViewBag.ManufacturerId = new SelectList(manufacturers, "Id", "Name", carInfo.ManufacturerId);
-            ViewBag.CarTypeId = new SelectList(carTypes, "Id", "Type", carInfo.CarTypeId);
-            ViewBag.TransmissionTypeId = new SelectList(transmissionTypes, "Id", "Type", carInfo.TransmissionTypeId);
-
-            return View(carInfo);
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// POST: CarInfoes/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfo carInfo)
-        {
-            if (ModelState.IsValid)
-            {
-                var response = await _httpClient.PostAsJsonAsync("api/CarInfoes", carInfo);
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-            }
-
-            // If we got this far, something failed, redisplay form with dropdown data
-            ViewBag.ManufacturerId = new SelectList(await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers"), "Id", "Name", carInfo.ManufacturerId);
-            ViewBag.CarTypeId = new SelectList(await GetDropdownDataAsync<CarType>("api/DropdownData/CarTypes"), "Id", "Type", carInfo.CarTypeId);
-            ViewBag.TransmissionTypeId = new SelectList(await GetDropdownDataAsync<CarTransmissionType>("api/DropdownData/TransmissionTypes"), "Id", "Type", carInfo.TransmissionTypeId);
-            return View(carInfo);
-        }
-
-// POST: api/CarInfoes
-        [HttpPost]
-        [ResponseType(typeof(CarInfo))]
-        public IHttpActionResult PostCarInfo(CarInfo carInfo)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.CarInfoes.Add(carInfo);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
-        }
-public async Task<ActionResult> Create()
-        {
-            var manufacturers = await GetDropdownDataAsync<Manufacturer>("api/DropdownData/Manufacturers");
-            var carTypes = await GetDropdownDataAsync<CarType>("api/DropdownData/CarTypes");
-            var transmissionTypes = await GetDropdownDataAsync<CarTransmissionType>("api/DropdownData/TransmissionTypes");
-
-            ViewBag.ManufacturerId = new SelectList(manufacturers, "Id", "Name");
-            ViewBag.CarTypeId = new SelectList(carTypes, "Id", "Type");
-            ViewBag.TransmissionTypeId = new SelectList(transmissionTypes, "Id", "Type");
-            return View();
-        }
-
-        private async Task<List<T>> GetDropdownDataAsync<T>(string endpoint)
-        {
-            var response = await _httpClient.GetAsync(endpoint);
-            response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<T>>(json);
-        }
-
-
-//////////////////////////
-[HttpGet]
-        [Route("api/DropdownData/Manufacturers")]
-        public IHttpActionResult GetManufacturers()
-        {
-            var manufacturers = db.Manufacturers.Select(m => new { m.Id, m.Name }).ToList();
-            return Ok(manufacturers);
-        }
-
-        [HttpGet]
-        [Route("api/DropdownData/CarTypes")]
-        public IHttpActionResult GetCarTypes()
-        {
-            var carTypes = db.CarTypes.Select(ct => new { ct.Id, ct.Type }).ToList();
-            return Ok(carTypes);
-        }
-
-        [HttpGet]
-        [Route("api/DropdownData/TransmissionTypes")]
-        public IHttpActionResult GetTransmissionTypes()
-        {
-            var transmissionTypes = db.CarTransmissionTypes.Select(tt => new { tt.Id, tt.Type }).ToList();
-            return Ok(transmissionTypes);
-        }
-
-//////////////////////////////////
-// POST: api/CarInfoes
-        [HttpPost]
-        [ResponseType(typeof(CarInfo))]
-        public IHttpActionResult PostCarInfo(CarInfo carInfo)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.CarInfoes.Add(carInfo);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
-        }
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
