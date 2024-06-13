@@ -1,469 +1,78 @@
-Customer. aspx file  (derived from master page )
-------------------------------------------------------------------------------------------
-<%@ Page Title="" Language="C#" MasterPageFile="~/Master.Master" AutoEventWireup="true" CodeBehind="Customer.aspx.cs" Inherits="CarInfoMang.Customer" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-   
-</asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="cphOpenSideNav" runat="server">
-</asp:Content>
-<asp:Content ID="Content3" ContentPlaceHolderID="cphSideNav" runat="server">
-</asp:Content>
-<asp:Content ID="Content4" ContentPlaceHolderID="cphBody" runat="server">
-    <table class="w-100">
-      <script type="text/javascript">
-    function showTextbox() {
-        var dropdown = document.getElementById('<%= ddlOptions.ClientID %>');
-        var textbox = document.getElementById('<%= txtSearch.ClientID %>');
-        if (dropdown.value !== "") {
-            textbox.style.display = 'inline-block';
-        }
-        else {
-            textbox.style.display = 'none';
-        }
-    }
-     </script>
-        <div>
-            <asp:DropDownList ID="ddlOptions" AppendDataBoundItems="true" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlOptions_SelectedIndexChanged" onchange="showTextbox">
-  <asp:ListItem Text="Selected Option.." Value="0" />
-  <asp:ListItem Text="Model" Value="1" />
-  <asp:ListItem Text="Manufacture Name" Value="2" />
-  <asp:ListItem Text="Type" Value="3" />
-  </asp:DropDownList>
-  <asp:TextBox ID="txtSearch" runat="server" Style="display:none; margin-left:10px;" placeholder="Enter Search term." OnTextChanged="txtSearch_TextChanged"></asp:TextBox>
-  </asp:TextBox>
-  <asp:Button ID="btnSearch" runat="server" Text="Search"  OnClick="btnSearch_Click"/>
-        </div>
-                
-    </table>
-</asp:Content>
------------------------------------------------------------------------------------------------------------------------------------------------------
-Customer.aspx.cs 
+@model CarInformationManagement_Entittes.CarInfoViewModel
 
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
-namespace CarInfoMang
-{
-    public partial class Customer : System.Web.UI.Page
-    {
-        protected void Page_Load(object sender, EventArgs e)
-        {
-            if(!IsPostBack)
-            {
-                txtSearch.Style["display"]="none";
-            }
-        }
-
-        protected void btnSearch_Click(object sender, EventArgs e)
-        {
-            string searchTerm=txtSearch.Text;
-            int selectOption = Convert.ToInt32(ddlOptions.SelectedValue);
-        }
-
-        protected void txtSearch_TextChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        protected void ddlOptions_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //txtSearch.Text=string.Empty;
-            if(ddlOptions.SelectedValue!="")
-            {
-                txtSearch.Style["display"] = "inline-block";
-            }
-            else
-            {
-                txtSearch.Style["display"] = "none";
-            }
-        }
-    }
-}
-------------------------------------------------------------------------------------------------------------------------------------------------------
-Car Table------------------------
-CREATE TABLE Car (
-    CarId INT PRIMARY KEY,
-    ManufacturerId INT NOT NULL,
-    CarTypeId INT NOT NULL,
-    TransmissionTypeId INT NOT NULL,
-    ManufacturerName NVARCHAR(255) NOT NULL,
-    Model NVARCHAR(255) UNIQUE NOT NULL,
-    Type NVARCHAR(50) NOT NULL,
-    Engine CHAR(4) NOT NULL CHECK (Engine LIKE '[0-9].[0-9]L'),
-    BHP INT NOT NULL,
-    Transmission NVARCHAR(50) NOT NULL CHECK (Transmission IN ('Manual', 'Automatic')),
-    Mileage INT NOT NULL,
-    Seat INT NOT NULL,
-    AirBagDetails NVARCHAR(255) NOT NULL,
-    BootSpace INT NOT NULL,
-    Price DECIMAL(18, 2) NOT NULL,
-    FOREIGN KEY (ManufacturerId) REFERENCES Manufacturer(Id),
-    FOREIGN KEY (CarTypeId) REFERENCES CarType(Id),
-    FOREIGN KEY (TransmissionTypeId) REFERENCES CarTransmissionType(Id)
----------
-protected void btnSearch_Click(object sender, EventArgs e)
-        {
-            string selectedColumn = ddlColumn.SelectedValue;
-            string selectedValue = ddlDistinctValues.SelectedValue;
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                string query = $"SELECT * FROM car WHERE {selectedColumn} = @value";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@value", selectedValue);
-
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-
-                gvResults.DataSource = dt;
-                gvResults.DataBind();
-            }
-        }
-    }
-}
------------------------------------------------------------------------LAYER ****CHECK****_______________________________________________
- public void searchAndDisplay()
- {
-
-     string selectedColumn = ddlOptions.SelectedValue;
-     string selectedValue = ddlSortItems.SelectedValue;
-
-     SqlConnection objCon = new SqlConnection("server=(localdb)\\local;" +
-         "database=CIMSPROJECT; " +
-         "integrated security=true");
-
-     SqlCommand objComm = new SqlCommand("SearchCar", objCon); //////////////////////newly added line 
-     objComm.CommandType = CommandType.StoredProcedure;
-
-     objComm.Parameters.AddWithValue("@ColumnName", selectedColumn);
-     objComm.Parameters.AddWithValue("@Value", selectedValue);
-
-     objCon.Open();
-     objComm.ExecuteNonQuery();
-     objCon.Close();
-
-     SqlDataAdapter adapter = new SqlDataAdapter(objComm);
-     DataTable dt = new DataTable();
-     adapter.Fill(dt);
-
-     GridView1.DataSource = dt;
-         GridView1.DataBind();
-    
- }
-==============================Styeling gridview ===================================================
-<table class="w-100"  Style="padding-top:50px;">
-    <tr>
-        <td style="width: 404px">&nbsp;</td>
-        <td class="text-center" Style="width:222px; padding-top:50px;">
-            <asp:GridView ID="GridView1" runat="server" Style="margin-left: 10px; Width:210px; text-align:center; border-spacing:5px; row-gap:5px; background-color:lightgrey">
-            </asp:GridView>
-        </td>
-        <td>&nbsp;</td>
-    </tr>
-</table>
-
-
-==================bootstrap styling===========
-link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-
-
-
-
---------------------------presentation----------
-Creating a PowerPoint presentation for the Car Information Management System (CIMS) involves outlining the key components, functionalities, and details of the system as described in your problem statement. Here is a structured approach to your presentation:
-
-### Slide 1: Title Slide
-- **Title**: Car Information Management System (CIMS)
-- **Subtitle**: An Overview of Features and Functionalities
-- **Presented By**: [Your Name/Team Name]
-- **Date**: [Date]
-
-### Slide 2: Agenda
-- Introduction
-- Objectives
-- Actors
-- Macro Level Operations
-- Module List and Details
-- Entity Descriptions
-- Constraints
-- Summary
-
-### Slide 3: Introduction
-- **What is CIMS?**
-  - A system designed to manage and view detailed information about cars.
-  - Helps administrators perform various operations on car data.
-
-### Slide 4: Objectives
-- To enable administrators to:
-  - Add, update, delete, and search car details.
-  - View car details based on specific criteria (Manufacturer, Type).
-- To provide customers (future enhancement) with:
-  - The ability to search and view car details.
-
-### Slide 5: Actors
-- **Administrator**:
-  - Add Car
-  - Update Car
-  - Delete Car
-  - Search Car by Name
-  - View Car List by Manufacturer and Type
-- **Customer** (Future Enhancement):
-  - Search Car by Name
-  - View Car List by Manufacturer and Type
-
-### Slide 6: Macro Level Operations
-- **Add Car Details**
-- **Modify Car Details**
-- **Remove Car**
-- **View Car List**
-- **Search Car by Model**
-
-### Slide 7: Module List and Details
-- **Create Car**
-  - Capture car details: Manufacturer, Model, Type, Engine, BHP, Transmission, Mileage, Seats, AirBagDetails, BootSpace, Features, Price.
-- **Search Car**
-  - Search by model name.
-- **Modify Car**
-  - Search and update car details.
-- **Remove Car**
-  - Search and delete car details with confirmation.
-- **Car Summary (View)**
-  - Display car list with essential details in a tabular format.
-
-### Slide 8: Entity Descriptions
-- **Car Entity**:
-  - ManufacturerName : String
-  - Model : String (Must be unique)
-  - Type : String (“Hatchback”, “Sedan” or “SUV”)
-  - Engine : String (4 characters long, format: 1.2L)
-  - BHP: Number
-  - Transmission: String (Manual/Automatic)
-  - Mileage: Number
-  - Seats: Number
-  - AirBagDetails: String
-  - BootSpace: Number
-  - Price: Number
-
-### Slide 9: Entity Descriptions (Continued)
-- **Manufacturer Entity**:
-  - Id: Numeric
-  - Name: String
-  - ContactNo: String (10 digits)
-  - RegisteredOffice: String
-- **CarType Entity**:
-  - Id: Numeric
-  - Type: String (“Hatchback”, “Sedan” or “SUV”)
-- **CarTransmissionType Entity**:
-  - Id: Numeric
-  - Type: String (“Manual” or “Automatic”)
-
-### Slide 10: Constraints
-- Proper validation required for all inputs.
-- Appropriate messages for all activities (success or failure).
-- User-friendly menu for selecting activities.
-- Unique constraints and formatting rules for certain fields (e.g., Model, Engine).
-
-### Slide 11: Summary
-- CIMS aims to streamline the management of car details for administrators.
-- Comprehensive functionalities including add, modify, delete, search, and view.
-- Future enhancements for customer functionalities.
-- Ensures data validation and user-friendly operations.
-
-### Slide 12: Q&A
-- **Questions?**
-
-### Slide 13: Thank You
-- **Thank you for your attention!**
-- **Contact Information**: [Your Contact Info]
-
-### Note:
-- Add visual elements like icons, relevant images, and diagrams where appropriate to make the slides more engaging.
-- Ensure that each slide is not overly cluttered with text; use bullet points for clarity.
-- Practice presenting to ensure smooth delivery and a clear understanding of each slide's content.
-
-You can create this PowerPoint presentation using tools like Microsoft PowerPoint, Google Slides, or any other presentation software.
-===========================================================GROUP PROJECT=========================================================================
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Description;
-using Car_Info_Management.Models.Entities;
-
-namespace Car_Info_Management.Controllers
-{
-    public class CarInfoesController : ApiController
-    {
-        private Car1 db = new Car1();
-
-        // GET:api/Values
-
-        public IEnumerable<CarInfo> GetCarInfoes()
-        {
-            string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SqlConStr"].ToString();
-            string sqlSelect="Select * form Car"
-            SqlDataAdapter da=new SqlDataAdapter(sqlSelect);
-            //return db.CarInfoes.Include(c =>c.CarType)
-            //    .Include(c =>c.Manufacturer)
-            //    .Include(c =>c.CarTransmissionType)
-            //    .ToList();
-
-            var carInfoes = from car in db.CarInfoes
-                            select new CarInfo
-                            {
-                                CarId = car.CarId,
-                                CarType = car.CarType,
-                                Manufacturer = car.Manufacturer,
-                                CarTransmissionType = car.CarTransmissionType
-                            };
-            return carInfoes;
-        }
-
-        // GET: api/CarInfoes/5
-        [ResponseType(typeof(CarInfo))]
-        public IHttpActionResult GetCarInfo(int id)
-        {
-            CarInfo carInfo = db.CarInfoes.Find(id);
-            if (carInfo == null)
-            {
-                return NotFound();
-            }
-
-            return Ok([ApiController]
-[Route("api/[controller]")]
-public class CarInfoController : ControllerBase
-{
-    private readonly ApplicationDbContext _context;
-
-    public CarInfoController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetCarDetails()
-    {
-        var carDetails = await (from car in _context.CarInfos
-                                join carType in _context.CarTypes on car.CarTypeId equals carType.Id
-                                join carTransmission in _context.CarTransmissions on car.CarTransmissionId equals carTransmission.Id
-                                join manufacturer in _context.Manufacturers on car.ManufacturerId equals manufacturer.Id
-                                select new
-                                {
-                                    CarId = car.Id,
-                                    CarModel = car.Model,
-                                    CarType = carType.Type,
-                                    Transmission = carTransmission.Transmission,
-                                    Manufacturer = manufacturer.Name
-                                }).ToListAsync();
-
-        return Ok(carDetails);
-    }
+@{
+    ViewData["Title"] = "Details";
 }
 
+<h1>Details</h1>
 
-
-
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
-namespace Car_Info_Management.Controllers
-{
-    public class CarInfoesController : Controller
-    {
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public CarInfoesController(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
-
-        // GET: CarInfoes
-        public async Task<IActionResult> Index()
-        {
-            var carInfoList = await GetCarInfoAsync();
-            return View(carInfoList);
-        }
-
-        // Helper function to call the API and retrieve car information
-        private async Task<IEnumerable<CarInfo>> GetCarInfoAsync()
-        {
-            IEnumerable<CarInfo> carInfoList = new List<CarInfo>();
-
-            using (var client = _httpClientFactory.CreateClient())
-            {
-                client.BaseAddress = new Uri("https://localhost:44388/api/");
-                var response = await client.GetAsync("GetCarInfoes");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadAsStringAsync();
-                    carInfoList = JsonConvert.DeserializeObject<IEnumerable<CarInfo>>(data);
-                }
-                else
-                {
-                    // Handle the error response
-                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-                }
-            }
-
-            return carInfoList;
-        }
-    }
-
-    public class CarInfo
-    {
-        public int Id { get; set; }
-        public string Make { get; set; }
-        public string Model { get; set; }
-        public int Year { get; set; }
-    }
-}
----------------------------------------
-private async Task<List<CarInfo>> HelperGetCarInfoAsync()
-{
-    List<CarInfo> carInfoList = new List<CarInfo>();
-
-    using (var client = _httpClientFactory.CreateClient())
-    {
-        client.BaseAddress = new Uri("https://localhost:44388/api/");
-        var response = await client.GetAsync("GetCarInfoes");
-
-        if (response.IsSuccessStatusCode)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            carInfoList = JsonConvert.DeserializeObject<List<CarInfo>>(data);
-        }
-        else
-        {
-            ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-        }
-    }
-
-    return carInfoList;
-}
-
-
-
-public async Task<IActionResult> Index()
-{
-    var carInfoList = await HelperGetCarInfoAsync();
-    return View(carInfoList);
-}
+<div>
+    <h4>CarInfo</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Engine)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Engine)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BHP)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BHP)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Mileage)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Mileage)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Seat)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Seat)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AirBagDetails)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AirBagDetails)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BootSpace)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BootSpace)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CarTypes)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CarTypeName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Manufacturers)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ManufacturerName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TransmisiionType)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TransmissionTypeName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.CarId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
