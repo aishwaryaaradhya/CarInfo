@@ -9,7 +9,14 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+
+<!-- Include Bootstrap CSS (optional) -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- Include DataTable CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+
+<table id="carTable" class="table table-striped table-bordered">
     <thead>
         <tr>
             <th>
@@ -50,102 +57,42 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CarId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Engine)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BHP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Mileage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Seat)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AirBagDetails)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BootSpace)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CarTypeName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ManufacturerName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TransmissionTypeName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CarId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CarId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CarId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-
-
-
-@model IEnumerable<CarInformationManagement_Entittes.CarInfoViewModel>
-
-@{
-    ViewData["Title"] = "Index";
-}
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-<!-- Include Bootstrap CSS (optional) -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-<!-- Include DataTable CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
-
-<table id="carTable" class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.CarId)</th>
-            <th>@Html.DisplayNameFor(model => model.Engine)</th>
-            <th>@Html.DisplayNameFor(model => model.BHP)</th>
-            <th>@Html.DisplayNameFor(model => model.Mileage)</th>
-            <th>@Html.DisplayNameFor(model => model.Seat)</th>
-            <th>@Html.DisplayNameFor(model => model.AirBagDetails)</th>
-            <th>@Html.DisplayNameFor(model => model.BootSpace)</th>
-            <th>@Html.DisplayNameFor(model => model.Price)</th>
-            <th>@Html.DisplayNameFor(model => model.CarTypeName)</th>
-            <th>@Html.DisplayNameFor(model => model.ManufacturerName)</th>
-            <th>@Html.DisplayNameFor(model => model.TransmissionTypeName)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.CarId)</td>
-                <td>@Html.DisplayFor(modelItem => item.Engine)</td>
-                <td>@Html.DisplayFor(modelItem => item.BHP)</td>
-                <td>@Html.DisplayFor(modelItem => item.Mileage)</td>
-                <td>@Html.DisplayFor(modelItem => item.Seat)</td>
-                <td>@Html.DisplayFor(modelItem => item.AirBagDetails)</td>
-                <td>@Html.DisplayFor(modelItem => item.BootSpace)</td>
-                <td>@Html.DisplayFor(modelItem => item.Price)</td>
-                <td>@Html.DisplayFor(modelItem => item.CarTypeName)</td>
-                <td>@Html.DisplayFor(modelItem => item.ManufacturerName)</td>
-                <td>@Html.DisplayFor(modelItem => item.TransmissionTypeName)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CarId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Engine)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BHP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mileage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Seat)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AirBagDetails)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BootSpace)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CarTypeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ManufacturerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransmissionTypeName)
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.CarId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.CarId">Details</a> |
@@ -155,9 +102,8 @@
         }
     </tbody>
 </table>
-
 <!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <!-- Include DataTable JS -->
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -165,7 +111,19 @@
 
 <!-- Initialize DataTable -->
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#carTable').DataTable();
     });
 </script>
+
+Creating Error:
+jquery-3.5.1.js:4046 jQuery.Deferred exception: $(...).DataTable is not a function TypeError: $(...).DataTable is not a function
+    at HTMLDocument.<anonymous> (https://localhost:7270/CarInfoes/Index:191:24)
+    at mightThrow (https://code.jquery.com/jquery-3.5.1.js:3762:29)
+    at process (https://code.jquery.com/jquery-3.5.1.js:3830:12) undefined
+jQuery.Deferred.exceptionHook @ jquery-3.5.1.js:4046
+process @ jquery-3.5.1.js:3834
+jquery-3.5.1.js:4055 Uncaught TypeError: $(...).DataTable is not a function
+    at HTMLDocument.<anonymous> (Index:191:24)
+    at mightThrow (jquery-3.5.1.js:3762:29)
+    at process (jquery-3.5.1.js:3830:12)
