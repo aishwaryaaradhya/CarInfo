@@ -1,205 +1,79 @@
-@model IEnumerable<CarInformationManagement_Entittes.CarInfoViewModel>
+@model CarInformationManagement_Entittes.CarInfoViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Edit";
 }
 
-<h1>Index</h1>
+<h1>Edit</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h4>CarInfo</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CarId" />
+            <div class="form-group">
+                <label asp-for="ManufacturerId" class="control-label"></label>
+                <select asp-for="ManufacturerId" class="form-control" asp-items="@(ViewData["Manufacturer"] as SelectList)"></select>
+                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarTypeId" class="control-label"></label>
+                <select asp-for="CarTypeId" class="form-control" asp-items="@(ViewData["CarTypes"] as SelectList)"></select>
+                <span asp-validation-for="CarTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TransmissionTypeId" class="control-label"></label>
+                <select asp-for="TransmissionTypeId" class="form-control" asp-items="@(ViewData["TransmissionType"] as SelectList)"></select>
+                <span asp-validation-for="TransmissionTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Engine" class="control-label"></label>
+                <input asp-for="Engine" class="form-control" />
+                <span asp-validation-for="Engine" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BHP" class="control-label"></label>
+                <input asp-for="BHP" class="form-control" />
+                <span asp-validation-for="BHP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mileage" class="control-label"></label>
+                <input asp-for="Mileage" class="form-control" />
+                <span asp-validation-for="Mileage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Seat" class="control-label"></label>
+                <input asp-for="Seat" class="form-control" />
+                <span asp-validation-for="Seat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AirBagDetails" class="control-label"></label>
+                <input asp-for="AirBagDetails" class="form-control" />
+                <span asp-validation-for="AirBagDetails" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BootSpace" class="control-label"></label>
+                <input asp-for="BootSpace" class="form-control" />
+                <span asp-validation-for="BootSpace" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
 
-<!-- Include Bootstrap CSS (optional) -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
-<!-- Include DataTable CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
-
-<table id="carTable" class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CarId)
-                @*@Html.HiddenFor(model => model.CarId)*@
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Engine)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BHP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Mileage)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Seat)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AirBagDetails)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BootSpace)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CarTypeName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ManufacturerName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TransmissionTypeName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CarId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Engine)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BHP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Mileage)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Seat)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AirBagDetails)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BootSpace)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CarTypeName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ManufacturerName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TransmissionTypeName)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.CarId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.CarId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.CarId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<!-- Include DataTable JS -->
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-
-<!-- Initialize DataTable -->
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#carTable').DataTable();
-    });
-</script>
-
-Creating Error:
-jquery-3.5.1.js:4046 jQuery.Deferred exception: $(...).DataTable is not a function TypeError: $(...).DataTable is not a function
-    at HTMLDocument.<anonymous> (https://localhost:7270/CarInfoes/Index:191:24)
-    at mightThrow (https://code.jquery.com/jquery-3.5.1.js:3762:29)
-    at process (https://code.jquery.com/jquery-3.5.1.js:3830:12) undefined
-jQuery.Deferred.exceptionHook @ jquery-3.5.1.js:4046
-process @ jquery-3.5.1.js:3834
-jquery-3.5.1.js:4055 Uncaught TypeError: $(...).DataTable is not a function
-    at HTMLDocument.<anonymous> (Index:191:24)
-    at mightThrow (jquery-3.5.1.js:3762:29)
-    at process (jquery-3.5.1.js:3830:12)
-
-
-
-@model IEnumerable<CarInformationManagement_Entittes.CarInfoViewModel>
-
-@{
-    ViewData["Title"] = "Index";
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-<!-- Include Bootstrap CSS (optional) -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-<!-- Include DataTable CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
-
-<table id="carTable" class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.CarId)</th>
-            <th>@Html.DisplayNameFor(model => model.Engine)</th>
-            <th>@Html.DisplayNameFor(model => model.BHP)</th>
-            <th>@Html.DisplayNameFor(model => model.Mileage)</th>
-            <th>@Html.DisplayNameFor(model => model.Seat)</th>
-            <th>@Html.DisplayNameFor(model => model.AirBagDetails)</th>
-            <th>@Html.DisplayNameFor(model => model.BootSpace)</th>
-            <th>@Html.DisplayNameFor(model => model.Price)</th>
-            <th>@Html.DisplayNameFor(model => model.CarTypeName)</th>
-            <th>@Html.DisplayNameFor(model => model.ManufacturerName)</th>
-            <th>@Html.DisplayNameFor(model => model.TransmissionTypeName)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.CarId)</td>
-                <td>@Html.DisplayFor(modelItem => item.Engine)</td>
-                <td>@Html.DisplayFor(modelItem => item.BHP)</td>
-                <td>@Html.DisplayFor(modelItem => item.Mileage)</td>
-                <td>@Html.DisplayFor(modelItem => item.Seat)</td>
-                <td>@Html.DisplayFor(modelItem => item.AirBagDetails)</td>
-                <td>@Html.DisplayFor(modelItem => item.BootSpace)</td>
-                <td>@Html.DisplayFor(modelItem => item.Price)</td>
-                <td>@Html.DisplayFor(modelItem => item.CarTypeName)</td>
-                <td>@Html.DisplayFor(modelItem => item.ManufacturerName)</td>
-                <td>@Html.DisplayFor(modelItem => item.TransmissionTypeName)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.CarId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.CarId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.CarId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<!-- Include DataTable JS -->
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-
-<!-- Initialize DataTable -->
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#carTable').DataTable();
-    });
-</script>
