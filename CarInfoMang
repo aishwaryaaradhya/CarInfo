@@ -76,3 +76,100 @@
     <a asp-action="Edit" asp-route-id="@Model?.CarId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+
+
+
+
+
+
+
+
+@model CarInformationManagement_Entittes.CarInfoViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; font-family: 'Arial', sans-serif;">
+    <h4>CarInfo</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Engine)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Engine)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BHP)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BHP)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Mileage)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Mileage)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Seat)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Seat)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AirBagDetails)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AirBagDetails)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BootSpace)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BootSpace)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CarTypeName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CarTypeName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ManufacturerName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ManufacturerName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TransmissionTypeName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TransmissionTypeName)
+        </dd>
+    </dl>
+</div>
+<div class="text-center mt-3">
+    <a asp-action="Edit" asp-route-id="@Model?.CarId" class="btn btn-black">Edit</a> |
+    <a asp-action="Index" class="btn btn-black">Back to List</a>
+</div>
+
+<style>
+    .btn-black {
+        background-color: black;
+        color: white;
+    }
+    .btn-black:hover {
+        background-color: #333;
+    }
+</style>
