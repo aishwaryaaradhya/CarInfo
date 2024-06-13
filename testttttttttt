@@ -1,179 +1,91 @@
------------------------------------------------MVC CONTROLLER---------------------------------------------------
-[HttpPost]
-
-public async Task<ActionResult> Create([Bind(Include = "CarId,ManufacturerId,CarTypeId,TransmissionTypeId,Engine,BHP,Mileage,Seat,AirBagDetails,BootSpace,Price")] CarInfo carInfo)
-{
-    if (ModelState.IsValid)
-    {
-        var response = await _httpClient.PostAsJsonAsync("CarInfoes", carInfo);
-
-        if (response.IsSuccessStatusCode)
-        {
-            return RedirectToAction("Index");
-        }
-
-        ModelState.AddModelError(string.Empty, "An error occurred while saving the data.");
-    }
-
-    ViewData["ManufacturerId"] = new SelectList(await GetDropdownDataAsync<Manufacturer>("CarInfoes/Manufacturers"), "Id", "Name", carInfo.ManufacturerId);
-    ViewData["CarTypeId"] = new SelectList(await GetDropdownDataAsync<CarType>("CarInfoes/CarTypes"), "Id", "Type", carInfo.CarTypeId);
-    ViewData["TransmissionTypeId"] = new SelectList(await GetDropdownDataAsync<CarTransmissionType>("CarInfoes/TransmissionTypes"), "Id", "Type", carInfo.TransmissionTypeId);
-    return View(carInfo);
-}
-------------------------------------------------CREATE VIEW-------------------------------------------------------------------------------------
-@model Car_Info_Management.Models.Entities.CarInfo
+@model CarInformationManagement_Entittes.CarInfoViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewData["Title"] = "Edit";
 }
 
-<h2>Create</h2>
+<h1>Edit CarInformation</h1>
 
-
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>CarInfo</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.HiddenFor(model => model.ManufacturerId)
-        @Html.LabelFor(model => model.ManufacturerId, "Manufacturer", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.ManufacturerId, (SelectList)ViewData["ManufacturerId"], "Select Manufacturer", htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.ManufacturerId, "", new { @class = "text-danger" })
-        </div>
+@* <h4>CarInfo</h4> *@
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <form asp-action="Edit" style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; font-family: Cursive">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CarId" />
+            <div class="form-group">
+                <label asp-for="ManufacturerName" class="control-label"></label>
+                <select asp-for="ManufacturerId" class="form-control" asp-items="@(ViewData["Manufacturer"] as SelectList)"></select>
+                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarTypeName" class="control-label"></label>
+                <select asp-for="CarTypeId" class="form-control" asp-items="@(ViewData["CarTypes"] as SelectList)"></select>
+                <span asp-validation-for="CarTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TransmissionTypeName" class="control-label"></label>
+                <select asp-for="TransmissionTypeId" class="form-control" asp-items="@(ViewData["TransmissionType"] as SelectList)"></select>
+                <span asp-validation-for="TransmissionTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Engine" class="control-label"></label>
+                <input asp-for="Engine" class="form-control" />
+                <span asp-validation-for="Engine" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BHP" class="control-label"></label>
+                <input asp-for="BHP" class="form-control" />
+                <span asp-validation-for="BHP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mileage" class="control-label"></label>
+                <input asp-for="Mileage" class="form-control" />
+                <span asp-validation-for="Mileage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Seat" class="control-label"></label>
+                <input asp-for="Seat" class="form-control" />
+                <span asp-validation-for="Seat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AirBagDetails" class="control-label"></label>
+                <input asp-for="AirBagDetails" class="form-control" />
+                <span asp-validation-for="AirBagDetails" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BootSpace" class="control-label"></label>
+                <input asp-for="BootSpace" class="form-control" />
+                <span asp-validation-for="BootSpace" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group text-center">
+                <input type="submit" value="Save" class="btn btn-black" />
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="form-group">
-        @Html.HiddenFor(model => model.CarTypeId)
-        @Html.LabelFor(model => model.CarTypeId, "Car Type", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model=>model.CarTypeId, (SelectList)ViewData["CarTypeId"], "Select Car Type", htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.CarTypeId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.HiddenFor(model => model.TransmissionTypeId)
-        @Html.LabelFor(model => model.TransmissionTypeId, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.TransmissionTypeId, (SelectList)ViewData["TransmissionTypeId"], "Select Transmission Type",new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.TransmissionTypeId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Engine, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Engine, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Engine, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.BHP, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.BHP, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BHP, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Mileage, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Mileage, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Mileage, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Seat, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Seat, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Seat, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.AirBagDetails, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.AirBagDetails, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.AirBagDetails, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.BootSpace, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.BootSpace, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BootSpace, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
+<div class="text-center mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
--------------------------------------------------------API CREATE CONTROLLER WITH DROPDOWN -------------------------------------------------------
-[System.Web.Http.HttpGet]
-[System.Web.Http.Route("api/CarInfoes/Manufacturers")]
-public IHttpActionResult GetManufacturers()
-{
-    var manufacturers = db.Manufacturers.Select(m => new { m.Id, m.Name }).ToList();
-    return Ok(manufacturers);
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
-[System.Web.Http.HttpGet]
-[System.Web.Http.Route("api/CarInfoes/CarTypes")]
-public IHttpActionResult GetCarTypes()
-{
-    var carTypes = db.CarTypes.Select(ct => new { ct.Id, ct.Type }).ToList();
-    return Ok(carTypes);
-}
-
-[System.Web.Http.HttpGet]
-[System.Web.Http.Route("api/CarInfoes/TransmissionTypes")]
-public IHttpActionResult GetTransmissionTypes()
-{
-    var transmissionTypes = db.CarTransmissionTypes.Select(tt => new { tt.Id, tt.Type }).ToList();
-    return Ok(transmissionTypes);
-}
-
-
-// POST: api/CarInfoes
-[System.Web.Http.HttpPost]
-[ResponseType(typeof(CarInfo))]
-public IHttpActionResult PostCarInfo(CarInfo carInfo)
-{
-    if (!ModelState.IsValid)
-    {
-        return BadRequest(ModelState);
+<style>
+    .btn-black {
+        background-color: black;
+        color: white;
+       margin-top:10px;
     }
 
-    db.CarInfoes.Add(carInfo);
-    db.SaveChanges();
-
-    return CreatedAtRoute("DefaultApi", new { id = carInfo.CarId }, carInfo);
-}
+        .btn-black:hover {
+            background-color: #333;
+        }
+</style>
