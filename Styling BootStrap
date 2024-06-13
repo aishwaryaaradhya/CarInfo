@@ -77,3 +77,112 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+m
+
+
+
+
+@model CarInformationManagement_Entittes.CarInfoViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>CarInfo</h4>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit" style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CarId" />
+            <div class="form-group">
+                <label asp-for="ManufacturerId" class="control-label"></label>
+                <select asp-for="ManufacturerId" class="form-control"></select>
+                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarTypeId" class="control-label"></label>
+                <select asp-for="CarTypeId" class="form-control"></select>
+                <span asp-validation-for="CarTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TransmissionTypeId" class="control-label"></label>
+                <select asp-for="TransmissionTypeId" class="form-control"></select>
+                <span asp-validation-for="TransmissionTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Engine" class="control-label"></label>
+                <input asp-for="Engine" class="form-control" />
+                <span asp-validation-for="Engine" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BHP" class="control-label"></label>
+                <input asp-for="BHP" class="form-control" />
+                <span asp-validation-for="BHP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mileage" class="control-label"></label>
+                <input asp-for="Mileage" class="form-control" />
+                <span asp-validation-for="Mileage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Seat" class="control-label"></label>
+                <input asp-for="Seat" class="form-control" />
+                <span asp-validation-for="Seat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AirBagDetails" class="control-label"></label>
+                <input asp-for="AirBagDetails" class="form-control" />
+                <span asp-validation-for="AirBagDetails" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BootSpace" class="control-label"></label>
+                <input asp-for="BootSpace" class="form-control" />
+                <span asp-validation-for="BootSpace" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group text-center">
+                <input type="submit" value="Save" class="btn btn-black" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<style>
+    .btn-black {
+        background-color: black;
+        color: white;
+    }
+    .btn-black:hover {
+        background-color: #333;
+    }
+</style>
