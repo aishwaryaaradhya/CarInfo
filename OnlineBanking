@@ -5,3 +5,24 @@ CREATE TABLE Payee (
     PayeeIfsc CHAR(8) NOT NULL CHECK (PayeeIfsc LIKE '[A-Z][A-Z][A-Z][A-Z][0-9][0-9][0-9][0-9]'),
     FOREIGN KEY (UserId) REFERENCES Customer(Id)
 );
+
+
+
+CREATE TABLE Transaction (
+    TransactionId INT IDENTITY(11,1) PRIMARY KEY,
+    AccountNo CHAR(12) NOT NULL,
+    TransactionType NVARCHAR(10) CHECK (TransactionType IN ('Withdrawal', 'Deposit')) NOT NULL,
+    Amount DECIMAL(18, 2) NOT NULL,
+    TransactionDate DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (AccountNo) REFERENCES Account(AccountNo)
+);
+
+
+CREATE TABLE Transaction (
+    TransactionId INT IDENTITY(11,1) PRIMARY KEY,
+    AccountNo CHAR(12) NOT NULL,
+    TransactionType NVARCHAR(10) CHECK (TransactionType IN ('Withdrawal', 'Deposit')) NOT NULL,
+    Amount DECIMAL(18, 2) NOT NULL,
+    TransactionDate DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (AccountNo) REFERENCES Account(AccountNo)
+);
