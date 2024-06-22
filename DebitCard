@@ -1,0 +1,240 @@
+==================DEBITCARD Web.Api Controller============================
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.BL;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DebitCardController : Controller
+    {
+        private readonly OnlineBankingPortalContext _context = new OnlineBankingPortalContext();
+
+        public DebitCardController()
+        {
+        }
+
+        // Get Debit Card Details by Account Number
+        [HttpGet("GetDebitCardDetails/{accountNumber}")]
+        public async Task<IActionResult> GetDebitCardDetails(long accountNumber)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+            var debitCardDetails = dcBL.GetDebitCardBL(accountNumber).ToList();
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this account number. You can apply for a new debit card.");
+            }
+
+            return Ok(debitCardDetails);
+        }
+
+        // Add Debit Card
+        [HttpPost("ApplyDebitCard")]
+        public async Task<IActionResult> ApplyDebitCard([FromBody] DebitCardApplication debitCard)
+        {
+            if (ModelState.IsValid)
+            {
+                DebitCardBL dcBL = new DebitCardBL();
+                var added = dcBL.ApplyDebitCardBL(debitCard);
+                if (added)
+                {
+                    return Ok(debitCard);
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        // Allot Debit Cards
+        [HttpPut("AllotDebitCard/{dcApplicationId}")]
+        public async Task<IActionResult> AllotDebitCard(long dcApplicationId, DebitCardDetail dcDetail)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+            if (dcApplicationId == null)
+            {
+                return NotFound("Debit card Application not found.");
+            }
+            bool added = dcBL.AllotDebitCardBL(dcApplicationId, dcDetail);
+            return Ok("Debit card activated successfully.");
+        }
+
+
+        // List Debit Cards for a Customer
+        [HttpGet("ListDebitCards/{customerId}")]
+        public async Task<IActionResult> ListDebitCards(int customerId)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+            var debitCardDetails = dcBL.GetDebitCardbyCustomerIdBL(customerId).ToList();
+
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this customer.");
+            }
+            return Ok(debitCardDetails);
+        }
+    }
+}
+
+====================Debit Card DAL================================
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.DAL
+{
+    public class DebitCardDAL
+    {
+        private readonly OnlineBankingPortalContext _context = new OnlineBankingPortalContext();
+
+        public DebitCardDAL()
+        {
+
+        }
+        public IEnumerable<DebitCardDetail> GetDebitCardDAL(long accountNumber)
+        {
+            try
+            {
+                List<DebitCardDetail> debitCardDetail = new List<DebitCardDetail>();
+                debitCardDetail = _context.DebitCardDetails
+               .Where(d => d.AccountNo == accountNumber)
+               .Include(d => d.Dcapplication)
+               .ToList();
+
+                return debitCardDetail;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        public  async Task<int> ApplyDebitCardDAL(DebitCardApplication debitCard)
+        {
+            var added = 0;
+            try
+            {
+                //Check if a debit Card application already exists for this account number
+
+                var existingApplication =  await _context.DebitCardApplications.FirstOrDefaultAsync(a => a.AccountNo == debitCard.AccountNo);
+                if (existingApplication != null)
+                {
+                    //if an application already exists, return a conflict response 
+                    return added;
+                       // ($"A debit card application already exists for account number {debitCard.AccountNo}"));
+                }
+
+
+                debitCard.DateOfApplication = DateTime.Now;
+                debitCard.Status = "Applied";
+                /*debitCard.IsActive = true;*/
+                _context.DebitCardApplications.Add(debitCard);
+                _context.SaveChangesAsync();
+                added = 1;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+            return added;
+        }
+
+
+        public bool AllotDebitCardDAL(long dcApplicationId, DebitCardDetail dcDetail)
+        {
+            bool added = false;
+            try
+            {
+
+                dcDetail.DcapplicationId = dcApplicationId;
+                Random random = new Random();
+                dcDetail.Cvv = random.Next(100, 999);
+
+                //debitCard.IsActive = true;
+                _context.DebitCardDetails.Add(dcDetail);
+                 _context.SaveChangesAsync();
+                added = true;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+            return added;
+        }
+
+        public IEnumerable<DebitCardApplication> GetDebitCardbyCustomerIdDAL(long customerId)
+        {
+            try
+            {
+               var debitCardDetail = _context.DebitCardApplications
+              .Include(dc => dc.DebitCardDetails)
+              .Where(dc => dc.CustomerId == customerId)
+              .ToList();
+
+                return debitCardDetail;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+    }
+}
+=============================DEBIT CARD BL================================
+using Online_Banking_Portal.DAL;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.BL
+{
+    public class DebitCardBL
+    {
+        public IEnumerable<DebitCardDetail> GetDebitCardBL(long accountNumber)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            return debitCardDetails.GetDebitCardDAL(accountNumber);
+        }
+
+        public Task<int> ApplyDebitCardBL(DebitCardApplication debitCard)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            var added=debitCardDetails.ApplyDebitCardDAL(debitCard);
+            return added;
+        }
+
+        public bool AllotDebitCardBL(long dcApplicationId, DebitCardDetail dcDetail)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            bool added = debitCardDetails.AllotDebitCardDAL(dcApplicationId,dcDetail);
+            return added;
+        }
+
+        public IEnumerable<DebitCardApplication> GetDebitCardbyCustomerIdBL(long customerId)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            return debitCardDetails.GetDebitCardbyCustomerIdDAL(customerId);
+        }
+
+    }
+}
+This is my Debit card Api Controller, Debit Card DAL, Debit Card BL. In ApplyDebitCard, if there is a Existing Debit card, i want to show Cannot apply debit card. If there is no debit card associated with that account number, then i can apply for debit card. And the debitCard Application should go to the DB. 
+In allotDebit car, once applied, Admin should have the option to Change the status of the debit card to Activated and it should be changed in DB also.
