@@ -165,3 +165,109 @@ namespace Online_Banking_Portal.API.Controllers
             }
         }
     }
+================================================================================================================================================
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DebitCardController : ControllerBase
+    {
+        private readonly OnlineBankingPortalContext _context;
+
+        public DebitCardController(OnlineBankingPortalContext context)
+        {
+            _context = context;
+        }
+
+        // Get Debit Card Details by Account Number
+        [HttpGet("GetDebitCardDetails/{accountNumber}")]
+        public async Task<IActionResult> GetDebitCardDetails(long accountNumber)
+        {
+            var debitCardDetails = await _context.DebitCardDetail
+                .Where(d => d.AccountNo == accountNumber)
+                .Include(d => d.Dcapplication)
+                .ToListAsync();
+
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this account number. You can apply for a new debit card.");
+            }
+
+            return Ok(debitCardDetails);
+        }
+
+        // Add Debit Card
+        [HttpPost("AddDebitCard")]
+        public async Task<IActionResult> AddDebitCard([FromBody] DebitCardApplication debitCard)
+        {
+            if (ModelState.IsValid)
+            {
+                debitCard.DateOfApplication = DateTime.Now;
+                debitCard.IsActive = true;
+                _context.DebitCardApplication.Add(debitCard);
+                await _context.SaveChangesAsync();
+                return Ok(debitCard);
+            }
+            return BadRequest(ModelState);
+        }
+
+        // Activate Debit Card
+        [HttpPut("ActivateDebitCard/{applicationId}")]
+        public async Task<IActionResult> ActivateDebitCard(long applicationId)
+        {
+            var debitCard = await _context.DebitCardApplication.FindAsync(applicationId);
+            if (debitCard == null)
+            {
+                return NotFound("Debit card not found.");
+            }
+
+            debitCard.IsActive = true;
+            _context.Entry(debitCard).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok("Debit card activated successfully.");
+        }
+
+        // Deactivate Debit Card
+        [HttpPut("DeactivateDebitCard/{applicationId}")]
+        public async Task<IActionResult> DeactivateDebitCard(long applicationId)
+        {
+            var debitCard = await _context.DebitCardApplication.FindAsync(applicationId);
+            if (debitCard == null)
+            {
+                return NotFound("Debit card not found.");
+            }
+
+            debitCard.IsActive = false;
+            _context.Entry(debitCard).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok("Debit card deactivated successfully.");
+        }
+
+        // List Debit Cards for a Customer
+        [HttpGet("ListDebitCards/{customerId}")]
+        public async Task<IActionResult> ListDebitCards(int customerId)
+        {
+            var debitCardApplications = await _context.DebitCardApplication
+                .Where(dc => dc.CustomerId == customerId)
+                .Include(dc => dc.DebitCardDetails)
+                .ToListAsync();
+
+            if (debitCardApplications == null || !debitCardApplications.Any())
+            {
+                return NotFound("No debit cards found for this customer.");
+            }
+
+            return Ok(debitCardApplications);
+        }
+    }
+}
