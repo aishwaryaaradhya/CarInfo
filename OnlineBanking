@@ -26,3 +26,142 @@ CREATE TABLE Transaction (
     TransactionDate DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (AccountNo) REFERENCES Account(AccountNo)
 );
+======================================================DEBIT CARD DETAILS===========================================================================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.Entities
+{
+    public class DebitCardDetail
+    {
+        public long DebitCardNo { get; set; }
+
+        public long DcapplicationId { get; set; }
+
+        public long AccountNo { get; set; }
+
+        public int Cvv { get; set; }
+
+        public DateTime? ExpiryDate { get; set; }
+
+        public virtual Account AccountNoNavigation { get; set; } = null!;
+
+        public virtual DebitCardApplication Dcapplication { get; set; } = null!;
+        public bool IsActive { get; set; }  //Created New Property : Aishwarya 
+    }
+}
+==============================================DEBIT CARD APPLICATION DETAILS====================================================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.Entities
+{
+    public class DebitCardApplication
+    {
+        public long DcapplicationId { get; set; }
+
+        public DateTime? DateOfApplication { get; set; }
+
+        public long AccountNo { get; set; }
+
+        public int CustomerId { get; set; }
+
+        public string? Status { get; set; }
+
+        public virtual Account AccountNoNavigation { get; set; } = null!;
+
+        public virtual ICollection<DebitCardDetail> DebitCardDetails { get; set; } = new List<DebitCardDetail>();
+        public bool IsActive { get; set; }  //created new proprty :Aishwarya
+    }
+}
+===========================================================DEBITCARDCONTROLLER======================================================================
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+
+namespace Online_Banking_Portal.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DebitCardController : Controller
+    {
+            private readonly OnlineBankingPortalContext _context;
+
+            public DebitCardController(OnlineBankingPortalContext context)
+            {
+                _context = context;
+            }
+
+            // Add Debit Card
+            [HttpPost("AddDebitCard")]
+            public async Task<IActionResult> AddDebitCard([FromBody] DebitCardApplication debitCard)
+            {
+                if (ModelState.IsValid)
+                {
+                    debitCard.DateOfApplication = DateTime.Now;
+                    debitCard.IsActive = true;
+                    _context.DebitCardApplication.Add(debitCard);
+                    await _context.SaveChangesAsync();
+                    return Ok(debitCard);
+                }
+                return BadRequest(ModelState);
+            }
+
+            // Activate Debit Card
+            [HttpPut("ActivateDebitCard/{cardNumber}")]
+            public async Task<IActionResult> ActivateDebitCard(long cardNumber)
+            {
+                var debitCard = await _context.DebitCardApplication.FindAsync(cardNumber);
+                if (debitCard == null)
+                {
+                    return NotFound("Debit card not found.");
+                }
+
+                debitCard.IsActive = true;
+                _context.Entry(debitCard).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok("Debit card activated successfully.");
+            }
+
+            // Deactivate Debit Card
+            [HttpPut("DeactivateDebitCard/{cardNumber}")]
+            public async Task<IActionResult> DeactivateDebitCard(long cardNumber)
+            {
+                var debitCard = await _context.DebitCardApplication.FindAsync(cardNumber);
+                if (debitCard == null)
+                {
+                    return NotFound("Debit card not found.");
+                }
+
+                debitCard.IsActive = false;
+                _context.Entry(debitCard).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok("Debit card deactivated successfully.");
+            }
+
+            // List Debit Cards for a Customer
+            [HttpGet("ListDebitCards/{customerId}")]
+            public async Task<IActionResult> ListDebitCards(int customerId)
+            {
+                var debitCards = await _context.DebitCardApplication
+                    .Where(dc => dc.CustomerId == customerId)
+                    .ToListAsync();
+
+                if (debitCards == null || !debitCards.Any())
+                {
+                    return NotFound("No debit cards found for this customer.");
+                }
+
+                return Ok(debitCards);
+            }
+        }
+    }
