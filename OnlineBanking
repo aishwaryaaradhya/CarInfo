@@ -271,3 +271,235 @@ namespace Online_Banking_Portal.API.Controllers
         }
     }
 }
+==============================================DB CONTEXT=============================================================
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.Entities;
+
+namespace Online_Banking_Portal.DAL.Models;
+
+public partial class OnlineBankingPortalContext : DbContext
+{
+    public OnlineBankingPortalContext()
+    {
+    }
+
+    public OnlineBankingPortalContext(DbContextOptions<OnlineBankingPortalContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Account> Accounts { get; set; }
+
+    public virtual DbSet<AccountType> AccountTypes { get; set; }
+
+    public virtual DbSet<Customer> Customers { get; set; }
+
+    public virtual DbSet<DebitCardApplication> DebitCardApplications { get; set; }
+
+    public virtual DbSet<DebitCardDetail> DebitCardApplication { get; set; }
+
+    public virtual DbSet<LoanApplication> LoanApplications { get; set; }
+
+    public virtual DbSet<LoanPayment> LoanPayments { get; set; }
+
+    public virtual DbSet<LoanType> LoanTypes { get; set; }
+
+    public virtual DbSet<Payee> Payees { get; set; }
+
+    public virtual DbSet<Transaction> Transactions { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\local;Database=OnlineBankingPortal;Trusted_Connection=True;");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Account>(entity =>
+        {
+            entity.HasKey(e => e.AccountNo).HasName("PK__Accounts__349D9DFDFAB00810");
+
+            entity.Property(e => e.Balance).HasColumnType("decimal(15, 2)");
+            entity.Property(e => e.DateOfOpening).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.AccountType).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.AccountTypeId)
+                .HasConstraintName("FK__Accounts__Accoun__2B3F6F97");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__Accounts__Custom__2A4B4B5E");
+        });
+
+        modelBuilder.Entity<AccountType>(entity =>
+        {
+            entity.HasKey(e => e.AccountTypeId).HasName("PK__AccountT__8F9585AFDAB30091");
+
+            entity.ToTable("AccountType");
+
+            entity.Property(e => e.AccountTypeId).ValueGeneratedNever();
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64B8079F69AE");
+
+            entity.ToTable("Customer");
+
+            entity.HasIndex(e => e.EmailId, "UQ__Customer__7ED91ACEDE0A0D7C").IsUnique();
+
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ContactNo)
+                .HasMaxLength(15)
+                .IsUnicode(false);
+            entity.Property(e => e.Dob).HasColumnName("DOB");
+            entity.Property(e => e.EmailId)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Gender)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<DebitCardApplication>(entity =>
+        {
+            entity.HasKey(e => e.DcapplicationId).HasName("PK__DebitCar__0F8506FDF68D3E42");
+
+            entity.ToTable("DebitCardApplication");
+
+            entity.Property(e => e.DcapplicationId).HasColumnName("DCApplicationId");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.DateOfApplication).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("Applied");
+
+            entity.HasOne(d => d.AccountNoNavigation).WithMany(p => p.DebitCardApplications)
+                .HasForeignKey(d => d.AccountNo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DebitCard__Accou__300424B4");
+        });
+
+        modelBuilder.Entity<DebitCardDetail>(entity =>
+        {
+            entity.HasKey(e => e.DebitCardNo).HasName("PK__DebitCar__E52516E4A5206EF3");
+
+            entity.Property(e => e.Cvv).HasColumnName("CVV");
+            entity.Property(e => e.DcapplicationId).HasColumnName("DCApplicationId");
+            entity.Property(e => e.ExpiryDate).HasDefaultValueSql("(dateadd(year,(3),getdate()))");
+
+            entity.HasOne(d => d.AccountNoNavigation).WithMany(p => p.DebitCardDetails)
+                .HasForeignKey(d => d.AccountNo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DebitCard__Accou__33D4B598");
+
+            entity.HasOne(d => d.Dcapplication).WithMany(p => p.DebitCardDetails)
+                .HasForeignKey(d => d.DcapplicationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DebitCard__DCApp__34C8D9D1");
+        });
+
+        modelBuilder.Entity<LoanApplication>(entity =>
+        {
+            entity.HasKey(e => e.LoanApplicationId).HasName("PK__LoanAppl__F60027BDB1D6171C");
+
+            entity.ToTable("LoanApplication");
+
+            entity.Property(e => e.DateOfApplication).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.LoanStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasDefaultValue("In Process");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.LoanApplications)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__LoanAppli__Custo__619B8048");
+
+            entity.HasOne(d => d.LoanType).WithMany(p => p.LoanApplications)
+                .HasForeignKey(d => d.LoanTypeId)
+                .HasConstraintName("FK__LoanAppli__LoanT__60A75C0F");
+        });
+
+        modelBuilder.Entity<LoanPayment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId).HasName("PK__LoanPaym__9B556A38C1C4EA26");
+
+            entity.ToTable("LoanPayment");
+
+            entity.Property(e => e.TransactionDate).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.LoanApplication).WithMany(p => p.LoanPayments)
+                .HasForeignKey(d => d.LoanApplicationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LoanPayme__LoanA__6477ECF3");
+        });
+
+        modelBuilder.Entity<LoanType>(entity =>
+        {
+            entity.HasKey(e => e.LoanTypeId).HasName("PK__LoanType__19466BAF974E6E8F");
+
+            entity.ToTable("LoanType");
+
+            entity.Property(e => e.LoanTypeName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Roi).HasColumnName("ROI");
+        });
+
+        modelBuilder.Entity<Payee>(entity =>
+        {
+            entity.HasKey(e => e.PayeeId).HasName("PK__Payee__0BC3E4D97EF84105");
+
+            entity.ToTable("Payee");
+
+            entity.Property(e => e.PayeeAccountNo)
+                .HasMaxLength(12)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.PayeeIfsccode)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PayeeIFSCCode");
+            entity.Property(e => e.PayeeName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Payees)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payee__CustomerI__3E52440B");
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__55433A6BBB0306DA");
+
+            entity.Property(e => e.AccountNo).HasColumnName("AccountNO");
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TransactionDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TransactionType).HasMaxLength(10);
+
+            entity.HasOne(d => d.AccountNoNavigation).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.AccountNo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Transacti__Accou__398D8EEE");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
