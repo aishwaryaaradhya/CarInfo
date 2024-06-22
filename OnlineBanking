@@ -655,3 +655,29 @@ priority: u=1, i
  }
 
 This is my POST Debit Card, I want to accept CustomerId , DateTimeStamp and AccountNo from user and this values should be passed to Admin to change the status of the debitcard application
+==========================================================Debit Card Condition===========================================================
+ // POST: api/DebitCard/ApplyForDebitCard
+ [HttpPost("ApplyForDebitCard")]
+ public async Task<IActionResult> ApplyForDebitCard([FromBody] DebitCardApplication debitCardApplication)
+ {
+     if (debitCardApplication == null)
+     {
+         return BadRequest("DebitCardApplication is null.");
+     }
+
+     try
+     {
+        debitCardApplication.Status = "Applied";
+         debitCardApplication.DateOfApplication = DateTime.Now;
+         _context.DebitCardApplications.Add(debitCardApplication);
+         await _context.SaveChangesAsync();
+
+         return Ok(debitCardApplication);
+     }
+     catch (Exception ex)
+     {
+         // Log the exception (use your preferred logging method)
+         Console.WriteLine($"Error: {ex.Message}");
+         return StatusCode(500, "Internal server error");
+     }
+ }
