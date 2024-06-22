@@ -638,3 +638,20 @@ sec-fetch-site: same-origin
 sec-fetch-mode: cors
 sec-fetch-dest: empty
 priority: u=1, i
+======================================================================POST DEBIT CARD================================================================
+ // Add Debit Card
+ [HttpPost("AddDebitCard")]
+ public async Task<IActionResult> AddDebitCard([FromBody] DebitCardApplication debitCard)
+ {
+     if (ModelState.IsValid)
+     {
+         debitCard.DateOfApplication = DateTime.Now;
+         //debitCard.IsActive = true;
+         _context.DebitCardApplications.Add(debitCard);
+         await _context.SaveChangesAsync();
+         return Ok(debitCard);
+     }
+     return BadRequest(ModelState);
+ }
+
+This is my POST Debit Card, I want to accept CustomerId , DateTimeStamp and AccountNo from user and this values should be passed to Admin to change the status of the debitcard application
