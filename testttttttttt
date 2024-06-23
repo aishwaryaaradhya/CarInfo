@@ -34,4 +34,52 @@ X [ERROR] NG8001: 'app-apply-debit-card' is not a known element:
 
 
 Watch mode enabled. Watching for file changes...
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent {
+  title = 'online-banking-portal';
+}
+=======================
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { DebitCardDetailsComponent } from './components/debit-card-details/debit-card-details.component';
+import { ApplyDebitCardComponent } from './components/apply-debit-card/apply-debit-card.component';
+import { AllotDebitCardComponent } from './components/allot-debit-card/allot-debit-card.component';
+import { ListDebitCardsComponent } from './components/list-debit-card/list-debit-card.component';
+import { DebitCardService } from './services/debit-card.service';
+
+//Importing AppDetailsCardDetails
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    DebitCardDetailsComponent,
+    ApplyDebitCardComponent,
+    AllotDebitCardComponent,
+    ListDebitCardsComponent,
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ApplyDebitCardComponent
+  ],
+  providers: [DebitCardService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+=========================app.component.html==========================
+<app-apply-debit-card></app-apply-debit-card>
