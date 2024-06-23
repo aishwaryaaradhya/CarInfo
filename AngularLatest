@@ -175,3 +175,140 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+=========================================================================================
+X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+    src/app/allot-debit-card/allot-debit-card.component.html:3:25:
+      3 │ ...put type="number" [(ngModel)]="dcApplicationId" name="dcApplicat...
+        ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component AllotDebitCardComponent.
+
+    src/app/allot-debit-card/allot-debit-card.component.ts:6:15:
+      6 │   templateUrl: './allot-debit-card.component.html'
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+    src/app/allot-debit-card/allot-debit-card.component.html:5:25:
+      5 │ ...t type="number" [(ngModel)]="dcDetail.accountNo" name="accountNo...
+        ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component AllotDebitCardComponent.
+
+    src/app/allot-debit-card/allot-debit-card.component.ts:6:15:
+      6 │   templateUrl: './allot-debit-card.component.html'
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'router-outlet' is not a known element:
+1. If 'router-outlet' is an Angular component, then verify that it is part of this module.
+2. If 'router-outlet' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/app.component.html:0:0:
+      0 │ 
+        ╵ ^
+
+  Error occurs in the template of component AppComponent.
+
+    src/app/app.component.ts:5:15:
+      5 │   templateUrl: './app.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2306: File 'C:/Src/GrpProject/OnlineBanking/GIT/OnlineBankingPortalAngular/node_modules/@angular/common/http/index.d.ts' is not a module. [plugin angular-compiler]
+
+    src/app/app.module.ts:3:33:
+      3 │ import { HttpClientModule } from '@angular/common/http';
+        ╵                                  ~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-991010: Value at position 2 in the NgModule.imports of AppModule is not a reference
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/app.module.ts:20:11:
+      20 │   imports: [
+         ╵            ^
+
+  Unknown reference.
+
+    src/app/app.module.ts:23:4:
+      23 │     HttpClientModule
+         ╵     ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+    src/app/apply-debit-card/apply-debit-card.component.html:3:25:
+      3 │ ...e="number" [(ngModel)]="debitCardApplication.accountNo" name="ac...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ApplyDebitCardComponent.
+
+    src/app/apply-debit-card/apply-debit-card.component.ts:6:15:
+      6 │   templateUrl: './apply-debit-card.component.html'
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+    src/app/apply-debit-card/apply-debit-card.component.html:5:25:
+      5 │ ...e="number" [(ngModel)]="debitCardApplication.customerId" name="c...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ApplyDebitCardComponent.
+
+    src/app/apply-debit-card/apply-debit-card.component.ts:6:15:
+      6 │   templateUrl: './apply-debit-card.component.html'
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+    src/app/debit-card-details/debit-card-details.component.html:3:25:
+      3 │ ...nput type="number" [(ngModel)]="accountNumber" name="accountNumb...
+        ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ViewDebitCardDetailsComponent.
+
+    src/app/debit-card-details/debit-card-details.component.ts:6:15:
+      6 │   templateUrl: './debit-card-details.component.html'
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2306: File 'C:/Src/GrpProject/OnlineBanking/GIT/OnlineBankingPortalAngular/node_modules/@angular/common/http/index.d.ts' is not a module. [plugin angular-compiler]
+
+    src/app/debit-card.service.ts:2:27:
+      2 │ import { HttpClient } from '@angular/common/http';
+        ╵                            ~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-992003: No suitable injection token for parameter 'http' of class 'DebitCardService'.
+  Consider using the @Inject decorator to specify an injection token. [plugin angular-compiler]
+
+    src/app/debit-card.service.ts:12:22:
+      12 │   constructor(private http: HttpClient) { }
+         ╵                       ~~~~
+
+  This type does not have a value, so it cannot be used as injection token.
+
+    src/app/debit-card.service.ts:12:28:
+      12 │   constructor(private http: HttpClient) { }
+         ╵                             ~~~~~~~~~~
+
+
+X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+    src/app/list-debit-cards/list-debit-cards.component.html:3:25:
+      3 │ ...input type="number" [(ngModel)]="customerId" name="customerId" r...
+        ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ListDebitCardsComponent.
+
+    src/app/list-debit-cards/list-debit-cards.component.ts:6:15:
+      6 │   templateUrl: './list-debit-cards.component.html'
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Watch mode enabled. Watching for file changes...
