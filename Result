@@ -27,3 +27,114 @@ export class DebitCardService {
     return this.http.get<DebitCardApplication[]>(`${this.apiUrl}/ListDebitCards/${customerId}`);
   }
 }
+=======================================================================================
+import { Component, OnInit } from '@angular/core';
+import { DebitCardService } from 'src/app/services/debit-card.service';
+import { DebitCardDetail } from 'src/app/models/debit-card.models';
+
+@Component({
+  selector: 'app-debit-card-details',
+  templateUrl: './debit-card-details.component.html',
+  styleUrls: ['./debit-card-details.component.css']
+})
+export class DebitCardDetailsComponent implements OnInit {
+  accountNumber: number;
+  debitCardDetails: DebitCardDetail[] = [];
+
+  constructor(private debitCardService: DebitCardService) { }
+
+  ngOnInit(): void {
+  }
+
+  getDebitCardDetails() {
+    this.debitCardService.getDebitCardDetails(this.accountNumber).subscribe(
+      data => this.debitCardDetails = data,
+      error => console.error(error)
+    );
+  }
+}
+=============================================================================
+<div>
+  <h2>Get Debit Card Details</h2>
+  <input type="number" [(ngModel)]="accountNumber" placeholder="Enter Account Number" />
+  <button (click)="getDebitCardDetails()">Get Details</button>
+
+  <div *ngIf="debitCardDetails.length > 0">
+    <h3>Debit Card Details</h3>
+    <ul>
+      <li *ngFor="let card of debitCardDetails">
+        Debit Card No: {{ card.debitCardNo }} | CVV: {{ card.cvv }} | Expiry Date: {{ card.expiryDate | date }}
+      </li>
+    </ul>
+  </div>
+</div>
+===================================================
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { DebitCardDetailsComponent } from './components/debit-card-details/debit-card-details.component';
+import { ApplyDebitCardComponent } from './components/apply-debit-card/apply-debit-card.component';
+import { AllotDebitCardComponent } from './components/allot-debit-card/allot-debit-card.component';
+import { ListDebitCardsComponent } from './components/list-debit-cards/list-debit-cards.component';
+
+const routes: Routes = [
+  { path: 'debit-card-details', component: DebitCardDetailsComponent },
+  { path: 'apply-debit-card', component: ApplyDebitCardComponent },
+  { path: 'allot-debit-card', component: AllotDebitCardComponent },
+  { path: 'list-debit-cards', component: ListDebitCardsComponent },
+  { path: '', redirectTo: '/debit-card-details', pathMatch: 'full' },
+  { path: '**', redirectTo: '/debit-card-details' }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+===================================================================
+export interface DebitCardApplication {
+  dcapplicationId: number;
+  dateOfApplication?: Date;
+  accountNo: number;
+  customerId: number;
+  status?: string;
+  debitCardDetails?: DebitCardDetail[];
+}
+
+export interface DebitCardDetail {
+  debitCardNo: number;
+  dcapplicationId: number;
+  accountNo: number;
+  cvv: number;
+  expiryDate?: Date;
+}
+=======================================================
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { DebitCardDetailsComponent } from './components/debit-card-details/debit-card-details.component';
+import { ApplyDebitCardComponent } from './components/apply-debit-card/apply-debit-card.component';
+import { AllotDebitCardComponent } from './components/allot-debit-card/allot-debit-card.component';
+import { ListDebitCardsComponent } from './components/list-debit-cards/list-debit-cards.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    DebitCardDetailsComponent,
+    ApplyDebitCardComponent,
+    AllotDebitCardComponent,
+    ListDebitCardsComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+=================================================================================
