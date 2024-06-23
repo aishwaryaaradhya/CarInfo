@@ -681,3 +681,113 @@ This is my POST Debit Card, I want to accept CustomerId , DateTimeStamp and Acco
          return StatusCode(500, "Internal server error");
      }
  }
+============================================ANGULAR====================================================================
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.BL;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DebitCardController : Controller
+    {
+        private readonly OnlineBankingPortalContext _context = new OnlineBankingPortalContext();
+
+        public DebitCardController()
+        {
+        }
+
+        //Get: api/DebitCard/GetDebitCardDetails/{accountNumber}
+    [HttpGet("GetDebitCardDetails/{accountNumber}")]
+        public async Task<IActionResult> GetDebitCardDetails(long accountNumber)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+
+            //chckng Account Number exists
+            bool accountExists = await dcBL.AccountNumberExists(accountNumber);
+            if (!accountExists)
+            {
+                return BadRequest("Account number is not valid");
+            }
+
+            var debitCardDetails = dcBL.GetDebitCardBL(accountNumber).ToList();
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this account number. You can apply for a new debit card.");
+            }
+
+            return Ok(debitCardDetails);
+        }
+
+        // Apply for Debit Card
+        //Get : api/DebitCard/ApplyDebitCard
+        [HttpPost("ApplyDebitCard")]
+        public async Task<IActionResult> ApplyDebitCard([FromBody] DebitCardApplication debitCard)
+        {
+            if (ModelState.IsValid)
+            {
+                DebitCardBL dcBL = new DebitCardBL();
+                var result = await dcBL.ApplyDebitCardBL(debitCard);
+                if (result>0)
+                {
+                    return Ok(debitCard);
+                }
+                else
+                {
+                    return Conflict($"A debit Card application already exists for account number {debitCard.AccountNo}");
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        // Allot Debit Cards
+        [HttpPut("AllotDebitCard/{dcApplicationId}")]
+        public async Task<IActionResult> AllotDebitCard(long dcApplicationId,[FromBody] DebitCardDetail dcDetail)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+            if (dcApplicationId == 0 || dcDetail==null)
+            {
+                return BadRequest("Invalid application ID or debit Card Details.");
+                //return NotFound("Debit card Application not found.");
+            }
+            var (added,message) = await dcBL.AllotDebitCardBL(dcApplicationId, dcDetail);
+            if(!added)
+            {
+                return NotFound(message);
+            }
+
+            return Ok(message);
+
+        }
+
+
+        // List Debit Cards for a Customer
+        [HttpGet("ListDebitCards/{customerId}")]
+        public async Task<IActionResult> ListDebitCards(int customerId)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+
+            //chckng Customer ID exists
+            bool customerExists = await dcBL.CustomerIdExists(customerId);
+
+            if (!customerExists)
+            {
+                return BadRequest("Customer ID is not valid");
+            }
+            var debitCardDetails = dcBL.GetDebitCardbyCustomerIdBL(customerId).ToList();
+
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this customer.");
+            }
+            return Ok(debitCardDetails);
+        }
+    }
+}
+How to create Service connection to api from angular to get the methods in web api 
