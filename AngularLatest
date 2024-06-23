@@ -1,0 +1,28 @@
+=========================apply-debit-card.component.ts
+import { Component } from '@angular/core';
+import { DebitCardService } from '../debit-card.service';
+
+@Component({
+  selector: 'app-apply-debit-card',
+  templateUrl: './apply-debit-card.component.html'
+})
+export class ApplyDebitCardComponent {
+  debitCardApplication = {
+    accountNo: null,
+    customerId: null,
+    status: 'Applied'
+  };
+
+  constructor(private debitCardService: DebitCardService) { }
+
+  applyDebitCard() {
+    this.debitCardService.applyDebitCard(this.debitCardApplication).subscribe(
+      response => {
+        console.log('Debit card applied successfully', response);
+      },
+      error => {
+        console.error('Error applying debit card', error);
+      }
+    );
+  }
+}
