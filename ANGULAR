@@ -1,0 +1,615 @@
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.DAL
+{
+    public class DebitCardDAL
+    {
+        private readonly OnlineBankingPortalContext _context = new OnlineBankingPortalContext();
+
+        public DebitCardDAL()
+        {
+
+        }
+        public IEnumerable<DebitCardDetail> GetDebitCardDAL(long accountNumber)
+        {
+            try
+            {
+                List<DebitCardDetail> debitCardDetail = new List<DebitCardDetail>();
+                debitCardDetail = _context.DebitCardDetails
+               .Where(d => d.AccountNo == accountNumber)
+               .Include(d => d.Dcapplication)
+               .ToList();
+
+                return debitCardDetail;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        //chckng Account number exists
+        public async Task<bool> AccountNumberExistsDAL(long accountNumber)
+        {
+            try
+            {
+                return await _context.Accounts.AnyAsync(a => a.AccountNo == accountNumber);
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        public  async Task<int> ApplyDebitCardDAL(DebitCardApplication debitCard)
+        {
+            //var added = 0;
+            try
+            {
+
+                //Check if a debit Card application already exists for this account number
+
+                var existingApplication =  await _context.DebitCardApplications.FirstOrDefaultAsync(a => a.AccountNo == debitCard.AccountNo);
+                if (existingApplication != null)
+                {
+                    //if an application already exists, return a conflict response 
+                    return 0;
+                       // ($"A debit card application already exists for account number {debitCard.AccountNo}"));
+                }
+
+
+                debitCard.DateOfApplication = DateTime.Now;
+                debitCard.Status = "Applied";
+                /*debitCard.IsActive = true;*/
+                _context.DebitCardApplications.Add(debitCard);
+                await _context.SaveChangesAsync();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+            //return added;
+        }
+
+
+        public async Task<(bool,string)> AllotDebitCardDAL(long dcApplicationId, DebitCardDetail dcDetail)
+        {
+            //bool added = false;
+            try
+            {
+                var application= await _context.DebitCardApplications.FirstOrDefaultAsync(a => a.DcapplicationId==dcApplicationId);
+                if (application == null)
+                {
+                    return (false,"Debit Card Application not found."); //application not found
+                }
+
+                if(application.Status=="Alloted")
+                {
+                    return (false, "Debit card is already Alloted");
+                }
+
+                dcDetail.DcapplicationId = dcApplicationId;
+                //Random random = new Random();
+                dcDetail.Cvv = new Random().Next(100, 999);
+
+                //debitCard.IsActive = true;
+                _context.DebitCardDetails.Add(dcDetail);
+
+                application.Status = "Alloted";
+                _context.DebitCardApplications.Update(application);
+               await _context.SaveChangesAsync();
+                return (true,"Debit card Alloted successfully");  //successfully added
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+            //return added;
+        }
+
+        public IEnumerable<DebitCardApplication> GetDebitCardbyCustomerIdDAL(long customerId)
+        {
+            try
+            {
+               var debitCardDetail = _context.DebitCardApplications
+              .Include(dc => dc.DebitCardDetails)
+              .Where(dc => dc.CustomerId == customerId)
+              .ToList();
+
+                return debitCardDetail;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        //chckng Customer ID exists
+        public async Task<bool> CustomerIdExistsDAL(int customerId)
+        {
+            try
+            {
+                return await _context.Customers.AnyAsync(a => a.CustomerId == customerId);
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+    }
+}
+==================================================================================================================================================
+using Online_Banking_Portal.DAL;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.BL
+{
+    public class DebitCardBL
+    {
+        public IEnumerable<DebitCardDetail> GetDebitCardBL(long accountNumber)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            return debitCardDetails.GetDebitCardDAL(accountNumber);
+        }
+
+        //Checkng if Account number exixsts
+        public async Task<bool> AccountNumberExists(long accountNumber)
+        {
+            DebitCardDAL debitCardDAL = new DebitCardDAL();
+            return await debitCardDAL.AccountNumberExistsDAL(accountNumber);
+        }
+        
+
+        public Task<int> ApplyDebitCardBL(DebitCardApplication debitCard)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            //var added=debitCardDetails.ApplyDebitCardDAL(debitCard);
+            return debitCardDetails.ApplyDebitCardDAL(debitCard); 
+        }
+
+        public async Task<(bool,string)> AllotDebitCardBL(long dcApplicationId, DebitCardDetail dcDetail)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            //string message;
+            //bool added = await debitCardDetails.AllotDebitCardDAL(dcApplicationId, dcDetail,out message);
+            return await debitCardDetails.AllotDebitCardDAL(dcApplicationId, dcDetail);
+            //return (added,message);
+        }
+
+        public IEnumerable<DebitCardApplication> GetDebitCardbyCustomerIdBL(long customerId)
+        {
+            DebitCardDAL debitCardDetails = new DebitCardDAL();
+            return debitCardDetails.GetDebitCardbyCustomerIdDAL(customerId);
+        }
+
+        //To check Customer exists
+        public async Task<bool> CustomerIdExists(int customerId)
+        {
+            DebitCardDAL debitCardDAL = new DebitCardDAL();
+            return await debitCardDAL.CustomerIdExistsDAL(customerId);
+        }
+
+
+    }
+}
+==========================================================BL====================================================================================
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.BL;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DebitCardController : Controller
+    {
+        private readonly OnlineBankingPortalContext _context = new OnlineBankingPortalContext();
+
+        public DebitCardController()
+        {
+        }
+
+        // Get Debit Card Details by Account Number
+        [HttpGet("GetDebitCardDetails/{accountNumber}")]
+        public async Task<IActionResult> GetDebitCardDetails(long accountNumber)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+
+            //chckng Account Number exists
+            bool accountExists = await dcBL.AccountNumberExists(accountNumber);
+            if (!accountExists)
+            {
+                return BadRequest("Account number is not valid");
+            }
+
+            var debitCardDetails = dcBL.GetDebitCardBL(accountNumber).ToList();
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this account number. You can apply for a new debit card.");
+            }
+
+            return Ok(debitCardDetails);
+        }
+
+        // Apply for Debit Card
+        [HttpPost("ApplyDebitCard")]
+        public async Task<IActionResult> ApplyDebitCard([FromBody] DebitCardApplication debitCard)
+        {
+            if (ModelState.IsValid)
+            {
+                DebitCardBL dcBL = new DebitCardBL();
+                var result = await dcBL.ApplyDebitCardBL(debitCard);
+                if (result>0)
+                {
+                    return Ok(debitCard);
+                }
+                else
+                {
+                    return Conflict($"A debit Card application already exists for account number {debitCard.AccountNo}");
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        // Allot Debit Cards
+        [HttpPut("AllotDebitCard/{dcApplicationId}")]
+        public async Task<IActionResult> AllotDebitCard(long dcApplicationId,[FromBody] DebitCardDetail dcDetail)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+            if (dcApplicationId == 0 || dcDetail==null)
+            {
+                return BadRequest("Invalid application ID or debit Card Details.");
+                //return NotFound("Debit card Application not found.");
+            }
+            var (added,message) = await dcBL.AllotDebitCardBL(dcApplicationId, dcDetail);
+            if(!added)
+            {
+                return NotFound(message);
+            }
+
+            return Ok(message);
+
+        }
+
+
+        // List Debit Cards for a Customer
+        [HttpGet("ListDebitCards/{customerId}")]
+        public async Task<IActionResult> ListDebitCards(int customerId)
+        {
+            DebitCardBL dcBL = new DebitCardBL();
+
+            //chckng Customer ID exists
+            bool customerExists = await dcBL.CustomerIdExists(customerId);
+
+            if (!customerExists)
+            {
+                return BadRequest("Customer ID is not valid");
+            }
+            var debitCardDetails = dcBL.GetDebitCardbyCustomerIdBL(customerId).ToList();
+
+            if (debitCardDetails == null || !debitCardDetails.Any())
+            {
+                return NotFound("No debit cards found for this customer.");
+            }
+            return Ok(debitCardDetails);
+        }
+    }
+}
+==============================================================Controller==================================================================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.Entities
+{
+    public class DebitCardApplication
+    {
+        public long DcapplicationId { get; set; }
+
+        public DateTime? DateOfApplication { get; set; }
+
+        public long AccountNo { get; set; }
+
+        public int CustomerId { get; set; }
+
+        public string? Status { get; set; }
+
+        public virtual Account? AccountNoNavigation { get; set; } = null!;
+
+        public virtual ICollection<DebitCardDetail> DebitCardDetails { get; set; } = new List<DebitCardDetail>();
+    }
+}
+==========================DebitCardDetails Application===================================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.Entities
+{
+    public class DebitCardDetail
+    {
+        public long DebitCardNo { get; set; }
+
+        public long DcapplicationId { get; set; }
+
+        public long AccountNo { get; set; }
+
+        public int Cvv { get; set; }
+
+        public DateTime? ExpiryDate { get; set; }
+
+        public virtual Account? AccountNoNavigation { get; set; } = null!;
+
+        public virtual DebitCardApplication? Dcapplication { get; set; } = null!;
+    }
+}
+=================================Debitcard details===========================================
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.Entities;
+
+namespace Online_Banking_Portal.DAL.Models;
+
+public partial class OnlineBankingPortalContext : DbContext
+{
+    public OnlineBankingPortalContext()
+    {
+    }
+
+    public OnlineBankingPortalContext(DbContextOptions<OnlineBankingPortalContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Account> Accounts { get; set; }
+
+    public virtual DbSet<AccountType> AccountTypes { get; set; }
+
+    public virtual DbSet<Customer> Customers { get; set; }
+
+    public virtual DbSet<DebitCardApplication> DebitCardApplications { get; set; }
+
+    public virtual DbSet<DebitCardDetail> DebitCardDetails { get; set; }
+
+    public virtual DbSet<LoanApplication> LoanApplications { get; set; }
+
+    public virtual DbSet<LoanPayment> LoanPayments { get; set; }
+
+    public virtual DbSet<LoanType> LoanTypes { get; set; }
+
+    public virtual DbSet<Payee> Payees { get; set; }
+
+    public virtual DbSet<Transaction> Transactions { get; set; }
+    public virtual DbSet<LoanEMI> LoanEMIs { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\local;Database=OnlineBankingPortal;Trusted_Connection=True;");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Account>(entity =>
+        {
+            entity.HasKey(e => e.AccountNo).HasName("PK__Accounts__349D9DFDFAB00810");
+
+            entity.Property(e => e.Balance).HasColumnType("decimal(15, 2)");
+            entity.Property(e => e.DateOfOpening).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.AccountType).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.AccountTypeId)
+                .HasConstraintName("FK__Accounts__Accoun__2B3F6F97");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__Accounts__Custom__2A4B4B5E");
+        });
+
+        modelBuilder.Entity<AccountType>(entity =>
+        {
+            entity.HasKey(e => e.AccountTypeId).HasName("PK__AccountT__8F9585AFDAB30091");
+
+            entity.ToTable("AccountType");
+
+            entity.Property(e => e.AccountTypeId).ValueGeneratedNever();
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<LoanEMI>(entity =>
+        {
+            entity.HasKey(e => e.EMIId).HasName("PK__LoanEMI__140A88B0FE432B39");
+
+            entity.ToTable("LoanEMI");
+
+            entity.Property(e => e.LoanApplicationId).ValueGeneratedNever();
+            entity.Property(e => e.EMI)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64B8079F69AE");
+
+            entity.ToTable("Customer");
+
+            entity.HasIndex(e => e.EmailId, "UQ__Customer__7ED91ACEDE0A0D7C").IsUnique();
+
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ContactNo)
+                .HasMaxLength(15)
+                .IsUnicode(false);
+            entity.Property(e => e.Dob).HasColumnName("DOB");
+            entity.Property(e => e.EmailId)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Gender)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<DebitCardApplication>(entity =>
+        {
+            entity.HasKey(e => e.DcapplicationId).HasName("PK__DebitCar__0F8506FDF68D3E42");
+
+            entity.ToTable("DebitCardApplication");
+
+            entity.Property(e => e.DcapplicationId).HasColumnName("DCApplicationId");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.DateOfApplication).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("Applied");
+
+            entity.HasOne(d => d.AccountNoNavigation).WithMany(p => p.DebitCardApplications)
+                .HasForeignKey(d => d.AccountNo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DebitCard__Accou__300424B4");
+        });
+
+        modelBuilder.Entity<DebitCardDetail>(entity =>
+        {
+            entity.HasKey(e => e.DebitCardNo).HasName("PK__DebitCar__E52516E4A5206EF3");
+
+            entity.Property(e => e.Cvv).HasColumnName("CVV");
+            entity.Property(e => e.DcapplicationId).HasColumnName("DCApplicationId");
+            entity.Property(e => e.ExpiryDate).HasDefaultValueSql("(dateadd(year,(3),getdate()))");
+
+            entity.HasOne(d => d.AccountNoNavigation).WithMany(p => p.DebitCardDetails)
+                .HasForeignKey(d => d.AccountNo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DebitCard__Accou__33D4B598");
+
+            entity.HasOne(d => d.Dcapplication).WithMany(p => p.DebitCardDetails)
+                .HasForeignKey(d => d.DcapplicationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DebitCard__DCApp__34C8D9D1");
+        });
+
+        modelBuilder.Entity<LoanApplication>(entity =>
+        {
+            entity.HasKey(e => e.LoanApplicationId).HasName("PK__LoanAppl__F60027BDB1D6171C");
+
+            entity.ToTable("LoanApplication");
+
+            entity.Property(e => e.DateOfApplication).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.LoanStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasDefaultValue("In Process");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.LoanApplications)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__LoanAppli__Custo__619B8048");
+
+            entity.HasOne(d => d.LoanType).WithMany(p => p.LoanApplications)
+                .HasForeignKey(d => d.LoanTypeId)
+                .HasConstraintName("FK__LoanAppli__LoanT__60A75C0F");
+        });
+
+        modelBuilder.Entity<LoanPayment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId).HasName("PK__LoanPaym__9B556A38C1C4EA26");
+
+            entity.ToTable("LoanPayment");
+
+            entity.Property(e => e.TransactionDate).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.LoanApplication).WithMany(p => p.LoanPayments)
+                .HasForeignKey(d => d.LoanApplicationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LoanPayme__LoanA__6477ECF3");
+        });
+
+        modelBuilder.Entity<LoanType>(entity =>
+        {
+            entity.HasKey(e => e.LoanTypeId).HasName("PK__LoanType__19466BAF974E6E8F");
+
+            entity.ToTable("LoanType");
+
+            entity.Property(e => e.LoanTypeName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Roi).HasColumnName("ROI");
+        });
+
+        modelBuilder.Entity<Payee>(entity =>
+        {
+            entity.HasKey(e => e.PayeeId).HasName("PK__Payee__0BC3E4D97EF84105");
+
+            entity.ToTable("Payee");
+
+            entity.Property(e => e.PayeeAccountNo)
+                .HasMaxLength(12)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.PayeeIfsccode)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PayeeIFSCCode");
+            entity.Property(e => e.PayeeName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Payees)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payee__CustomerI__3E52440B");
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__55433A6BBB0306DA");
+
+            entity.Property(e => e.AccountNo).HasColumnName("AccountNO");
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TransactionDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TransactionType).HasMaxLength(10);
+
+            entity.HasOne(d => d.AccountNoNavigation).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.AccountNo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Transacti__Accou__398D8EEE");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
+============================DB condtext======================
