@@ -1,175 +1,133 @@
-@model CarInformationManagement_Entittes.CarInfoViewModel
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-@{
-    ViewData["Title"] = "Details";
+@Injectable({
+  providedIn: 'root'
+})
+export class DebitCardService {
+  private apiUrl = 'https://localhost:44346/api/DebitCard';  // Your API URL
+
+  constructor(private http: HttpClient) { }
+
+  getDebitCardDetails(accountNumber: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/GetDebitCardDetails/${accountNumber}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  applyDebitCard(debitCardApplication: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ApplyDebitCard`, debitCardApplication)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  allotDebitCard(dcApplicationId: number, dcDetail: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/AllotDebitCard/${dcApplicationId}`, dcDetail)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  listDebitCards(customerId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/ListDebitCards/${customerId}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('An error occurred:', error);
+    return throwError('Something went wrong; please try again later.');
+  }
 }
+==============================================================================================
+ANGULAR COMPONENT USAGE
+=================================================================
+import { Component, OnInit } from '@angular/core';
+import { DebitCardService } from './debit-card.service';
 
-<h1>Details</h1>
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css']
+})
+export class YourComponent implements OnInit {
+  constructor(private debitCardService: DebitCardService) { }
 
-<div>
-    <h4>CarInfo</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Engine)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Engine)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BHP)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BHP)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Mileage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Mileage)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Seat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Seat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AirBagDetails)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AirBagDetails)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BootSpace)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BootSpace)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CarTypes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CarTypeName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Manufacturers)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ManufacturerName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TransmisiionType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TransmissionTypeName)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.CarId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+  ngOnInit(): void {
+    // Example method calls
+    this.getDebitCardDetails(123456789);
+    // Add other method calls as needed
+  }
 
+  getDebitCardDetails(accountNumber: number) {
+    this.debitCardService.getDebitCardDetails(accountNumber).subscribe(
+      data => {
+        console.log('Debit Card Details:', data);
+      },
+      error => {
+        console.error('Error:', error);
+      }
+    );
+  }
 
+  applyDebitCard(debitCardApplication: any) {
+    this.debitCardService.applyDebitCard(debitCardApplication).subscribe(
+      data => {
+        console.log('Application Successful:', data);
+      },
+      error => {
+        console.error('Error:', error);
+      }
+    );
+  }
 
+  allotDebitCard(dcApplicationId: number, dcDetail: any) {
+    this.debitCardService.allotDebitCard(dcApplicationId, dcDetail).subscribe(
+      data => {
+        console.log('Allotment Successful:', data);
+      },
+      error => {
+        console.error('Error:', error);
+      }
+    );
+  }
 
-
-
-
-
-
-@model CarInformationManagement_Entittes.CarInfoViewModel
-
-@{
-    ViewData["Title"] = "Details";
+  listDebitCards(customerId: number) {
+    this.debitCardService.listDebitCards(customerId).subscribe(
+      data => {
+        console.log('Debit Cards:', data);
+      },
+      error => {
+        console.error('Error:', error);
+      }
+    );
+  }
 }
+==========================================================================
+App Modulee
+=========================================================================
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http'; // Correct import
 
-<h1>Details</h1>
+import { AppComponent } from './app.component';
+import { YourComponent } from './your-component/your-component.component'; // Adjust as necessary
 
-<div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; font-family: 'Arial', sans-serif;">
-    <h4>CarInfo</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Engine)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Engine)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BHP)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BHP)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Mileage)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Mileage)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Seat)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Seat)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.AirBagDetails)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AirBagDetails)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BootSpace)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BootSpace)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CarTypeName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CarTypeName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ManufacturerName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ManufacturerName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TransmissionTypeName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TransmissionTypeName)
-        </dd>
-    </dl>
-</div>
-<div class="text-center mt-3">
-    <a asp-action="Edit" asp-route-id="@Model?.CarId" class="btn btn-black">Edit</a> |
-    <a asp-action="Index" class="btn btn-black">Back to List</a>
-</div>
-
-<style>
-    .btn-black {
-        background-color: black;
-        color: white;
-    }
-    .btn-black:hover {
-        background-color: #333;
-    }
-</style>
+@NgModule({
+  declarations: [
+    AppComponent,
+    YourComponent // Add your component here
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule // Correct usage here
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
