@@ -1,85 +1,29 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-X [ERROR] NG8001: 'app-apply-debit-card' is not a known element:
-1. If 'app-apply-debit-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'app-apply-debit-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/app.component.html:0:0:
-      0 │ 
-        ╵ ^
-
-  Error occurs in the template of component AppComponent.
-
-    src/app/app.component.ts:8:15:
-      8 │   templateUrl: './app.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-number
-PS C:\Src\GrpProject\OnlineBanking\GIT\online-banking-portal> ng serve
-Application bundle generation failed. [2.567 seconds]
-
-X [ERROR] NG8001: 'app-apply-debit-card' is not a known element:
-1. If 'app-apply-debit-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'app-apply-debit-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/app.component.html:0:0:
-      0 │ 
-        ╵ ^
-
-  Error occurs in the template of component AppComponent.
-
-    src/app/app.component.ts:8:15:
-      8 │   templateUrl: './app.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-Watch mode enabled. Watching for file changes...
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+@Injectable({
+  providedIn: 'root'
 })
-export class AppComponent {
-  title = 'online-banking-portal';
+export class DebitCardService {
+
+  private baseUrl = 'http://localhost:5000/api/DebitCard';
+
+  constructor(private http: HttpClient) { }
+
+  applyDebitCard(debitCardApplication: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/ApplyDebitCard`, debitCardApplication);
+  }
+
+  allotDebitCard(dcApplicationId: number, dcDetail: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/AllotDebitCard/${dcApplicationId}`, dcDetail);
+  }
+
+  getDebitCardDetails(accountNumber: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/GetDebitCardDetails/${accountNumber}`);
+  }
+
+  listDebitCards(customerId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/ListDebitCards/${customerId}`);
+  }
 }
-=======================
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { DebitCardDetailsComponent } from './components/debit-card-details/debit-card-details.component';
-import { ApplyDebitCardComponent } from './components/apply-debit-card/apply-debit-card.component';
-import { AllotDebitCardComponent } from './components/allot-debit-card/allot-debit-card.component';
-import { ListDebitCardsComponent } from './components/list-debit-card/list-debit-card.component';
-import { DebitCardService } from './services/debit-card.service';
-
-//Importing AppDetailsCardDetails
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    DebitCardDetailsComponent,
-    ApplyDebitCardComponent,
-    AllotDebitCardComponent,
-    ListDebitCardsComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    ApplyDebitCardComponent
-  ],
-  providers: [DebitCardService],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-=========================app.component.html==========================
-<app-apply-debit-card></app-apply-debit-card>
