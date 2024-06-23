@@ -1,188 +1,107 @@
-@model CarInformationManagement_Entittes.CarInfoViewModel
-
-@{
-    ViewData["Title"] = "Edit";
-}
-
-<h1>Edit</h1>
-
-<h4>CarInfo</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CarId" />
-            <div class="form-group">
-                <label asp-for="ManufacturerId" class="control-label"></label>
-                <select asp-for="ManufacturerId" class="form-control" asp-items="@(ViewData["Manufacturer"] as SelectList)"></select>
-                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CarTypeId" class="control-label"></label>
-                <select asp-for="CarTypeId" class="form-control" asp-items="@(ViewData["CarTypes"] as SelectList)"></select>
-                <span asp-validation-for="CarTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TransmissionTypeId" class="control-label"></label>
-                <select asp-for="TransmissionTypeId" class="form-control" asp-items="@(ViewData["TransmissionType"] as SelectList)"></select>
-                <span asp-validation-for="TransmissionTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Engine" class="control-label"></label>
-                <input asp-for="Engine" class="form-control" />
-                <span asp-validation-for="Engine" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BHP" class="control-label"></label>
-                <input asp-for="BHP" class="form-control" />
-                <span asp-validation-for="BHP" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Mileage" class="control-label"></label>
-                <input asp-for="Mileage" class="form-control" />
-                <span asp-validation-for="Mileage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Seat" class="control-label"></label>
-                <input asp-for="Seat" class="form-control" />
-                <span asp-validation-for="Seat" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AirBagDetails" class="control-label"></label>
-                <input asp-for="AirBagDetails" class="form-control" />
-                <span asp-validation-for="AirBagDetails" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BootSpace" class="control-label"></label>
-                <input asp-for="BootSpace" class="form-control" />
-                <span asp-validation-for="BootSpace" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
+HTML FILE
 <div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-m
-
-
-
-
-@model CarInformationManagement_Entittes.CarInfoViewModel
-
-@{
-    ViewData["Title"] = "Edit";
-}
-
-<h1>Edit</h1>
-
-<h4>CarInfo</h4>
-<hr />
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form asp-action="Edit" style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CarId" />
-            <div class="form-group">
-                <label asp-for="ManufacturerId" class="control-label"></label>
-                <select asp-for="ManufacturerId" class="form-control"></select>
-                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CarTypeId" class="control-label"></label>
-                <select asp-for="CarTypeId" class="form-control"></select>
-                <span asp-validation-for="CarTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TransmissionTypeId" class="control-label"></label>
-                <select asp-for="TransmissionTypeId" class="form-control"></select>
-                <span asp-validation-for="TransmissionTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Engine" class="control-label"></label>
-                <input asp-for="Engine" class="form-control" />
-                <span asp-validation-for="Engine" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BHP" class="control-label"></label>
-                <input asp-for="BHP" class="form-control" />
-                <span asp-validation-for="BHP" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Mileage" class="control-label"></label>
-                <input asp-for="Mileage" class="form-control" />
-                <span asp-validation-for="Mileage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Seat" class="control-label"></label>
-                <input asp-for="Seat" class="form-control" />
-                <span asp-validation-for="Seat" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AirBagDetails" class="control-label"></label>
-                <input asp-for="AirBagDetails" class="form-control" />
-                <span asp-validation-for="AirBagDetails" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BootSpace" class="control-label"></label>
-                <input asp-for="BootSpace" class="form-control" />
-                <span asp-validation-for="BootSpace" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group text-center">
-                <input type="submit" value="Save" class="btn btn-black" />
-            </div>
-        </form>
+    <h2>Get Debit Card Details</h2>
+    <input type="number" [(ngModel)]="accountNumber" placeholder="Enter Account Number" />
+    <button (click)="getDebitCardDetails()">Get Details</button>
+  
+    <div *ngIf="debitCardDetails.length > 0">
+      <h3>Debit Card Details</h3>
+      <ul>
+        <li *ngFor="let card of debitCardDetails">
+          Debit Card No: {{ card.debitCardNo }} | CVV: {{ card.cvv }} | Expiry Date: {{ card.expiryDate | date }}
+        </li>
+      </ul>
     </div>
-</div>
+  </div>
 
-<div class="text-center mt-3">
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</div>
+======================Debit Card Details . ts file===================
+import { Component, OnInit } from '@angular/core';
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+import { DebitCardDetail } from '../../../models/debit-card';
+import { DebitCardService } from '../../services/debit-card.service';
+
+
+@Component({
+  selector: 'app-debit-card-details',
+  templateUrl: './debit-card-details.component.html',
+  styleUrls: ['./debit-card-details.component.css']
+})
+export class DebitCardDetailsComponent implements OnInit {
+  accountNumber: number=0;
+  debitCardDetails: DebitCardDetail[] = [];
+
+  constructor(private debitCardService: DebitCardService) { }
+
+  ngOnInit(): void {
+  this.getDebitCardDetails() ;  
+  }
+
+  getDebitCardDetails() {
+    this.debitCardService.getDebitCardDetails(this.accountNumber).subscribe(
+      data => this.debitCardDetails = data,
+      error => console.error(error)
+    );
+  }
 }
+================================DEBIT CARD SERVICES ===================================
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { DebitCardApplication, DebitCardDetail } from '../../models/debit-card';
 
-<style>
-    .btn-black {
-        background-color: black;
-        color: white;
-    }
-    .btn-black:hover {
-        background-color: #333;
-    }
-</style>
+@Injectable({
+  providedIn: 'root'
+})
+export class DebitCardService {
+  private apiUrl = 'https://localhost:44346/api/DebitCard';
+
+  constructor(private http: HttpClient) {}
+
+  getDebitCardDetails(accountNumber: number): Observable<DebitCardDetail[]> {
+    return this.http.get<DebitCardDetail[]>(`${this.apiUrl}/GetDebitCardDetails/${accountNumber}`);
+  }
+
+  applyDebitCard(debitCard: DebitCardApplication): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ApplyDebitCard`, debitCard);
+  }
+
+  allotDebitCard(dcApplicationId: number, dcDetail: DebitCardDetail): Observable<any> {
+    return this.http.put(`${this.apiUrl}/AllotDebitCard/${dcApplicationId}`, dcDetail);
+  }
+
+  listDebitCards(customerId: number): Observable<DebitCardApplication[]> {
+    return this.http.get<DebitCardApplication[]>(`${this.apiUrl}/ListDebitCards/${customerId}`);
+  }
+}
+=============================================app.module.ts====================================
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { DebitCardDetailsComponent } from './components/debit-card-details/debit-card-details.component';
+import { ApplyDebitCardComponent } from './components/apply-debit-card/apply-debit-card.component';
+import { AllotDebitCardComponent } from './components/allot-debit-card/allot-debit-card.component';
+import { ListDebitCardComponent } from './components/list-debit-card/list-debit-card.component';
+
+//Importing AppDetailsCardDetails
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    DebitCardDetailsComponent,
+    ApplyDebitCardComponent,
+    AllotDebitCardComponent,
+    ListDebitCardComponent,
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
