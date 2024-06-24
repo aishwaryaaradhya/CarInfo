@@ -36,5 +36,29 @@ export class DebitCardComponent implements OnInit {
       );
     }
   }
+<div class="container">
+  <h2>Debit Card Details</h2>
 
+  <form [formGroup]="accountNumberForm" (ngSubmit)="getDebitCardDetails()">
+    <label for="accountNumber">Account Number:</label>
+    <input type="number" id="accountNumber" formControlName="accountNumber" placeholder="Enter account number">
+    <button type="submit" [disabled]="accountNumberForm.invalid">Fetch Details</button>
+  </form>
+
+  <div *ngIf="debitCardDetails.length > 0">
+    <h3>Debit Card Details</h3>
+    <ul>
+      <li *ngFor="let card of debitCardDetails">
+        <p>Debit Card Number: {{ card.debitCardNo }}</p>
+        <p>CVV: {{ card.cvv }}</p>
+        <p>Expiry Date: {{ card.expiryDate }}</p>
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="debitCardDetails.length === 0 && accountNumberForm.valid">
+    <p>No debit card details found for account number {{ accountNumberForm.get('accountNumber')?.value }}</p>
+  </div>
+
+</div>
 }
