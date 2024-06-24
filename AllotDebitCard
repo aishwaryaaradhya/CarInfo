@@ -360,7 +360,7 @@ namespace Online_Banking_Portal.DAL
         }
 
         //chckng Customer ID exists
-        public async Task<bool> CustomerIdExistsDAL(int customerId)
+        public async Task<bool> CustomerIdExistsDALi(int customerId)
         {
             try
             {
@@ -374,3 +374,133 @@ namespace Online_Banking_Portal.DAL
 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- allot-debit-card.component.html -->
+<div>
+  <h2>Allot Debit Card</h2>
+  <form (ngSubmit)="allotDebitCard()">
+    <div>
+      <label for="dcApplicationId">Application ID:</label>
+      <input type="number" id="dcApplicationId" [(ngModel)]="dcApplicationId" name="dcApplicationId" required />
+    </div>
+    <button type="submit">Allot</button>
+  </form>
+</div>
+
+
+
+
+// allot-debit-card.component.ts
+import { Component } from '@angular/core';
+import { DebitCardService } from '../debit-card.service';
+
+@Component({
+  selector: 'app-allot-debit-card',
+  templateUrl: './allot-debit-card.component.html',
+  styleUrls: ['./allot-debit-card.component.css']
+})
+export class AllotDebitCardComponent {
+  dcApplicationId: number | undefined;
+
+  constructor(private debitCardService: DebitCardService) { }
+
+  allotDebitCard(): void {
+    if (this.dcApplicationId) {
+      const dcDetail = {
+        debitCardNo: 0, // Assuming this will be generated server-side
+        dcapplicationId: this.dcApplicationId,
+        accountNo: 0, // Set appropriate account number or fetch from context
+        cvv: 0, // Assuming this will be generated server-side
+        expiryDate: new Date().setFullYear(new Date().getFullYear() + 3) // Example expiry date 3 years from now
+      };
+
+      this.debitCardService.allotDebitCard(this.dcApplicationId, dcDetail).subscribe(
+        response => {
+          console.log('Debit card allotted successfully', response);
+        },
+        error => {
+          console.error('Error allotting debit card', error);
+        }
+      );
+    }
+  }
+}
+
+
+
+
+
+// debit-card.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DebitCardService {
+  private baseUrl = 'https://localhost:44346/api/DebitCard';
+
+  constructor(private http: HttpClient) { }
+
+  allotDebitCard(dcApplicationId: number, dcDetail: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/AllotDebitCard/${dcApplicationId}`, dcDetail);
+  }
+}
+
+
+
+
+// app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { ApplyDebitCardComponent } from './apply-debit-card/apply-debit-card.component';
+import { AllotDebitCardComponent } from './allot-debit-card/allot-debit-card.component';
+import { DebitCardDetailsComponent } from './debit-card-details/debit-card-details.component';
+import { ListDebitCardsComponent } from './list-debit-cards/list-debit-cards.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    ApplyDebitCardComponent,
+    AllotDebitCardComponent,
+    DebitCardDetailsComponent,
+    ListDebitCardsComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
