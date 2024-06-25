@@ -1,0 +1,61 @@
+This is my Transaction Entity
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Online_Banking_Portal.Entities
+{
+    public class Transaction
+    {
+        public int TransactionId { get; set; }
+
+        public long AccountNo { get; set; }
+
+        public string TransactionType { get; set; } = null!;
+
+        public decimal Amount { get; set; }
+
+        public DateTime TransactionDate { get; set; }
+
+        public virtual Account AccountNoNavigation { get; set; } = null!;
+    }
+}
+
+This is my Account entity
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Transactions;
+
+namespace Online_Banking_Portal.Entities
+{
+    public class Account
+    {
+        public long AccountNo { get; set; }
+
+        public int? CustomerId { get; set; }
+
+        public int? AccountTypeId { get; set; }
+
+        public decimal Balance { get; set; }
+
+        public DateOnly? DateOfOpening { get; set; }
+
+        public virtual AccountType? AccountType { get; set; }
+
+        public virtual Customer? Customer { get; set; }
+
+        public virtual ICollection<DebitCardApplication> DebitCardApplications { get; set; } = new List<DebitCardApplication>();
+
+        public virtual ICollection<DebitCardDetail> DebitCardDetails { get; set; } = new List<DebitCardDetail>();
+
+        public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+    }
+}
+
+I want to create a asp.net core web api controller.with respect to customer Id, all the accountNo associated with that customer id should be selected.
+Based on the account number selected the transaction associated with thaat account number to be listed from the transaction table.
