@@ -136,3 +136,128 @@ export class AppRoutingModule { }
 
 
 
+
+<div class="container">
+  <h2>Loan Payments</h2>
+  <form (submit)="onSubmit()">
+    <div class="form-group">
+      <label for="customerId">Customer ID:</label>
+      <input type="number" class="form-control" id="customerId" [(ngModel)]="customerId" name="customerId" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Get Loan Payments</button>
+  </form>
+  <table class="table table-striped" *ngIf="loanPayments.length">
+    <thead>
+      <tr>
+        <th>Payment ID</th>
+        <th>Loan Application ID</th>
+        <th>Payment Amount</th>
+        <th>Transaction Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let payment of loanPayments">
+        <td>{{ payment.paymentId }}</td>
+        <td>{{ payment.loanApplicationId }}</td>
+        <td>{{ payment.paymentAmount }}</td>
+        <td>{{ payment.transactionDate | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+
+service
+import { Component, OnInit } from '@angular/core';
+import { LoanService } from '../loan.service';
+import { LoanPayment } from '../loan-payment.model';
+
+@Component({
+  selector: 'app-loan-payments',
+  templateUrl: './loan-payments.component.html',
+  styleUrls: ['./loan-payments.component.css']
+})
+export class LoanPaymentsComponent implements OnInit {
+  loanPayments: LoanPayment[] = [];
+  customerId: number;
+
+  constructor(private loanService: LoanService) { }
+
+  ngOnInit(): void {
+  }
+
+  onSubmit(): void {
+    if (this.customerId) {
+      this.getLoanPayments(this.customerId);
+    }
+  }
+
+  getLoanPayments(customerId: number): void {
+    this.loanService.getLoanPayments(customerId).subscribe(
+      (data: LoanPayment[]) => this.loanPayments = data,
+      error => console.error(error)
+    );
+  }
+}
+
+
+
+
+component
+
+import { Component, OnInit } from '@angular/core';
+import { LoanService } from '../loan.service';
+import { LoanPayment } from '../loan-payment.model';
+
+@Component({
+  selector: 'app-loan-payments',
+  templateUrl: './loan-payments.component.html',
+  styleUrls: ['./loan-payments.component.css']
+})
+export class LoanPaymentsComponent implements OnInit {
+  loanPayments: LoanPayment[] = [];
+  customerId: number;
+
+  constructor(private loanService: LoanService) { }
+
+  ngOnInit(): void {
+  }
+
+  onSubmit(): void {
+    if (this.customerId) {
+      this.getLoanPayments(this.customerId);
+    }
+  }
+
+  getLoanPayments(customerId: number): void {
+    this.loanService.getLoanPayments(customerId).subscribe(
+      (data: LoanPayment[]) => this.loanPayments = data,
+      error => console.error(error)
+    );
+  }
+}
+
+[ApiController]
+[Route("api/[controller]")]
+public class LoanController : ControllerBase
+{
+    [HttpGet("GetloanPaymentList")]
+    public IActionResult GetloanPaymentList([FromQuery] int customerID)
+    {
+        LoanBL objBL = new LoanBL();
+        var loanPayments = objBL.GetloanPaymentListBL(customerID);
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        return Ok(loanPayments);
+    }
+}
+
+
+
+
