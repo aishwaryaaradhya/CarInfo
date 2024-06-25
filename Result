@@ -1,263 +1,41 @@
-service 
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { LoanPayment } from './loan-payment.model';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class LoanService {
-
-  private apiUrl = 'https://your-api-url/api';  // Replace with your API base URL
-
-  constructor(private http: HttpClient) { }
-
-  getLoanPayments(customerId: number): Observable<LoanPayment[]> {
-    return this.http.get<LoanPayment[]>(`${this.apiUrl}/GetloanPaymentList?cutomerID=${customerId}`);
-  }
-}
-
-
-
-model
-
-export interface LoanPayment {
-  paymentId: number;
-  loanApplicationId: number;
-  paymentAmount: number;
-  transactionDate: Date;
-}
-
-
-component
-
-import { Component, OnInit } from '@angular/core';
-import { LoanService } from '../loan.service';
-import { LoanPayment } from '../loan-payment.model';
-
-@Component({
-  selector: 'app-loan-payments',
-  templateUrl: './loan-payments.component.html',
-  styleUrls: ['./loan-payments.component.css']
-})
-export class LoanPaymentsComponent implements OnInit {
-
-  loanPayments: LoanPayment[] = [];
-  customerId: number = 1;  // Replace with dynamic value as needed
-
-  constructor(private loanService: LoanService) { }
-
-  ngOnInit(): void {
-    this.getLoanPayments();
-  }
-
-  getLoanPayments(): void {
-    this.loanService.getLoanPayments(this.customerId).subscribe(
-      (data: LoanPayment[]) => this.loanPayments = data,
-      error => console.error(error)
-    );
-  }
-}
-
-
-loan html 
-
-
-<div class="container">
-  <h2>Loan Payments</h2>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Payment ID</th>
-        <th>Loan Application ID</th>
-        <th>Payment Amount</th>
-        <th>Transaction Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let payment of loanPayments">
-        <td>{{ payment.paymentId }}</td>
-        <td>{{ payment.loanApplicationId }}</td>
-        <td>{{ payment.paymentAmount }}</td>
-        <td>{{ payment.transactionDate | date:'short' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-
-app module
-
-
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { LoanPaymentsComponent } from './loan-payments/loan-payments.component';
-import { HttpClientModule } from '@angular/common/http';
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoanPaymentsComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-
-
-
-routing module
-
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { LoanPaymentsComponent } from './loan-payments/loan-payments.component';
-
-const routes: Routes = [
-  { path: 'loan-payments', component: LoanPaymentsComponent },
-  { path: '', redirectTo: '/loan-payments', pathMatch: 'full' }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }
-
-
-
-
-
-
-
-<div class="container">
-  <h2>Loan Payments</h2>
-  <form (submit)="onSubmit()">
-    <div class="form-group">
-      <label for="customerId">Customer ID:</label>
-      <input type="number" class="form-control" id="customerId" [(ngModel)]="customerId" name="customerId" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Get Loan Payments</button>
-  </form>
-  <table class="table table-striped" *ngIf="loanPayments.length">
-    <thead>
-      <tr>
-        <th>Payment ID</th>
-        <th>Loan Application ID</th>
-        <th>Payment Amount</th>
-        <th>Transaction Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let payment of loanPayments">
-        <td>{{ payment.paymentId }}</td>
-        <td>{{ payment.loanApplicationId }}</td>
-        <td>{{ payment.paymentAmount }}</td>
-        <td>{{ payment.transactionDate | date:'short' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-
-
-
-service
-import { Component, OnInit } from '@angular/core';
-import { LoanService } from '../loan.service';
-import { LoanPayment } from '../loan-payment.model';
-
-@Component({
-  selector: 'app-loan-payments',
-  templateUrl: './loan-payments.component.html',
-  styleUrls: ['./loan-payments.component.css']
-})
-export class LoanPaymentsComponent implements OnInit {
-  loanPayments: LoanPayment[] = [];
-  customerId: number;
-
-  constructor(private loanService: LoanService) { }
-
-  ngOnInit(): void {
-  }
-
-  onSubmit(): void {
-    if (this.customerId) {
-      this.getLoanPayments(this.customerId);
-    }
-  }
-
-  getLoanPayments(customerId: number): void {
-    this.loanService.getLoanPayments(customerId).subscribe(
-      (data: LoanPayment[]) => this.loanPayments = data,
-      error => console.error(error)
-    );
-  }
-}
-
-
-
-
-component
-
-import { Component, OnInit } from '@angular/core';
-import { LoanService } from '../loan.service';
-import { LoanPayment } from '../loan-payment.model';
-
-@Component({
-  selector: 'app-loan-payments',
-  templateUrl: './loan-payments.component.html',
-  styleUrls: ['./loan-payments.component.css']
-})
-export class LoanPaymentsComponent implements OnInit {
-  loanPayments: LoanPayment[] = [];
-  customerId: number;
-
-  constructor(private loanService: LoanService) { }
-
-  ngOnInit(): void {
-  }
-
-  onSubmit(): void {
-    if (this.customerId) {
-      this.getLoanPayments(this.customerId);
-    }
-  }
-
-  getLoanPayments(customerId: number): void {
-    this.loanService.getLoanPayments(customerId).subscribe(
-      (data: LoanPayment[]) => this.loanPayments = data,
-      error => console.error(error)
-    );
-  }
-}
-
 [ApiController]
 [Route("api/[controller]")]
-public class LoanController : ControllerBase
+public class AccountsController : ControllerBase
 {
-    [HttpGet("GetloanPaymentList")]
-    public IActionResult GetloanPaymentList([FromQuery] int customerID)
-    {
-        LoanBL objBL = new LoanBL();
-        var loanPayments = objBL.GetloanPaymentListBL(customerID);
+    private readonly OnlineBankingPortalContext _context;
 
-        if (!ModelState.IsValid)
+    public AccountsController(OnlineBankingPortalContext context)
+    {
+        _context = context;
+    }
+
+    [HttpGet("{customerId}/accounts")]
+    public async Task<ActionResult<List<Account>>> GetAccountsByCustomerId(int customerId)
+    {
+        var accounts = await _context.Accounts
+            .Where(a => a.CustomerId == customerId)
+            .ToListAsync();
+
+        if (accounts == null || accounts.Count == 0)
         {
-            return BadRequest(ModelState);
+            return NotFound();
         }
 
-        return Ok(loanPayments);
+        return Ok(accounts);
+    }
+
+    [HttpGet("{accountNo}/transactions")]
+    public async Task<ActionResult<List<Transaction>>> GetTransactionsByAccountNo(long accountNo)
+    {
+        var transactions = await _context.Transactions
+            .Where(t => t.AccountNo == accountNo)
+            .ToListAsync();
+
+        if (transactions == null || transactions.Count == 0)
+        {
+            return NotFound();
+        }
+
+        return Ok(transactions);
     }
 }
-
-
-
-
