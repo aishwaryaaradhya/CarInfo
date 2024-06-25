@@ -1,0 +1,24 @@
+ public IEnumerable<LoanPayment> GetloanPaymentListDAL(int customerId)
+ {
+     try
+     {
+         IEnumerable<LoanApplication> loanApplications = new List<LoanApplication>();
+         var loanPaymentHistory = (from loan in _context.LoanApplications
+                                       //where i.CustomerId == customerId
+                                   join loanPayment in _context.LoanPayments on loan.LoanApplicationId equals loanPayment.LoanApplicationId
+                                   select new LoanPayment
+                                   {
+                                       LoanApplicationId = loanPayment.LoanApplicationId,
+                                       PaymentAmount = loanPayment.PaymentAmount,
+                                       PaymentId = loanPayment.PaymentId,
+                                       TransactionDate = loanPayment.TransactionDate,
+                                   }).ToList();
+
+         IEnumerable<LoanApplication> result = loanApplications.Where(x => x.LoanStatus == "Sanctioned");
+         return (IEnumerable<LoanPayment>)result.ToList();
+     }
+     catch (Exception ex)
+     {
+         throw new OnlineBankExceptions(ex.Message);
+     }
+ }
