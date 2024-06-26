@@ -1,0 +1,89 @@
+This is my Loan Payement Component.ts 
+import { Component, OnInit } from '@angular/core';
+import { LoanService } from '../loan.service';
+import { LoanPayment } from '../models/debit-card.models';
+
+
+@Component({
+  selector: 'app-loan-payments',
+  templateUrl: './loan-payments.component.html',
+  styleUrls: ['./loan-payments.component.css']
+})
+export class LoanPaymentsComponent implements OnInit {
+
+  loanPayments: any = [];
+  customerId: number = 1;  // Replace with dynamic value as needed
+
+  constructor(private loanService: LoanService) { }
+
+  ngOnInit(): void {
+    this.getLoanPayments();
+  }
+
+  getLoanPayments(): void {
+    this.loanService.getLoanPayments(this.customerId).subscribe(
+    // (data:any)=>{
+    //   console.log(this.customerId);
+    // },
+      (data: any) => {console.log(this.loanPayments = data);
+    },
+    (error:any)=>{
+       console.error("Error Fetching loan Payment",error);
+    }
+    );
+  }
+}
+This is my Loan-payement.component.html
+<div class="container">
+  <h2>Loan Payments</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Payment ID</th>
+        <th>Loan Application ID</th>
+        <th>Payment Amount</th>
+        <th>Transaction Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let payment of loanPayments">
+        <td>{{ payment.paymentId }}</td>
+        <td>{{ payment.loanApplicationId }}</td>
+        <td>{{ payment.paymentAmount }}</td>
+        <td>{{ payment.transactionDate | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+This is my loanService.ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { LoanPayment } from './models/debit-card.models';
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LoanService {
+
+  private apiUrl = ' https://localhost:44346/api/Loan';  
+ 
+  constructor(private http: HttpClient) { }
+
+  getLoanPayments(customerId: number): Observable<LoanPayment[]> {
+    console.log(customerId);
+    console.log("Enter");
+    return this.http.get<LoanPayment[]>("https://localhost:44346/api/Loan/GetloanPayementList?cutomerID="+customerId);
+  }
+}
+
+This is models
+  export interface LoanPayment{
+  paymentId: number;
+  loanApplicationId: number;
+  paymentAmount: number;
+  transactionDate: Date;
+  }
+Here, i want the user to enter the customer Id, based on that customer id i want to fetch the details. Modify accordingly
