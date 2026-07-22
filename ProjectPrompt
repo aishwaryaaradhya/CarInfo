@@ -1,0 +1,87 @@
+# Prompt: Build a Long-Term Playwright Security Testing Framework
+
+Use this as your prompt to Claude (Code). Fill in the bracketed parts, then paste it in.
+
+---
+
+## THE PROMPT
+
+I need you to design and scaffold a **UI security testing framework** built on **Playwright + TypeScript**, using the **Page Object Model**. This is a long-term project — prioritize maintainability and expandability over speed of initial setup. Treat this as a framework, not a one-off test suite.
+
+### Context
+- Application under test: [describe app — e.g. "internal SaaS admin console with 3 roles: admin, manager, viewer"]
+- Existing project: [paste your current folder structure, or say "starting fresh"]
+- Primary focus area: **Auth, session, and access-control security testing** (OWASP-style), with room to add other categories later (input validation, CSRF, headers, etc.)
+- CI: [GitHub Actions / GitLab CI / Jenkins — specify]
+
+### Architecture requirements
+
+1. **Layered Page Object Model**
+   - `BasePage` with shared waits/navigation/error-handling — no page object duplicates this logic.
+   - Split large pages into **Component Objects** (e.g. `NavBar`, `LoginForm`, `SessionBanner`) that pages compose, not inherit.
+   - Locators centralized per page/component, never inline in test files.
+
+2. **Fixtures over setup boilerplate**
+   - Use Playwright's fixture system (`test.extend`) to inject page objects, authenticated contexts, and API helpers into tests — no manual `new LoginPage(page)` scattered everywhere.
+   - Provide fixtures for each **role/persona** (admin, manager, viewer, unauthenticated) so tests declare the role they need, not how to obtain it.
+
+3. **API-driven state setup, UI-driven verification**
+   - Authenticate and seed state via API calls where possible (faster, more reliable than UI login for every test) — reserve UI login flows for tests that are actually testing login/session behavior itself.
+   - Provide a thin API client layer separate from page objects.
+
+4. **Security test taxonomy as first-class structure**
+   - Organize security tests by category, not by page, e.g.:
+     ```
+     tests/
+       security/
+         auth/            (login, MFA, lockout, password reset)
+         session/         (timeout, fixation, concurrent sessions, cookie flags)
+         access-control/  (IDOR, privilege escalation, role matrix)
+         csrf/
+         headers/
+     ```
+   - Use Playwright tags (`@security`, `@auth`, `@access-control`, `@smoke`) so suites can be filtered/run independently in CI.
+
+5. **Role/permission matrix testing**
+   - Build a data-driven structure (e.g. a config/matrix file mapping role → allowed/forbidden routes and actions) so access-control tests are generated from data, not hand-written per role. Adding a new role or endpoint should mean adding a row, not writing new test files.
+
+6. **Config & environments**
+   - `playwright.config.ts` per environment (dev/staging) via `.env` files — never hardcoded URLs or credentials.
+   - Secrets (test user credentials, tokens) pulled from environment variables / CI secrets, never committed.
+
+7. **Code quality guardrails**
+   - TypeScript `strict` mode.
+   - ESLint + Prettier configured and enforced in CI.
+   - No hard-coded waits (`waitForTimeout`) — use auto-waiting locators/assertions only.
+
+### Specific security scenarios to scaffold (auth/session/access-control)
+- Session fixation (session ID unchanged after login)
+- Session invalidation on logout (old token/cookie rejected after logout)
+- Concurrent session handling (does a second login kill the first, or coexist?)
+- Idle/absolute session timeout enforcement
+- Cookie security attributes (`HttpOnly`, `Secure`, `SameSite`)
+- Privilege escalation attempts (lower-role user hitting higher-role routes/API calls directly)
+- IDOR (accessing another user's resource by ID manipulation)
+- Password reset flow abuse (token reuse, token expiry, enumeration via error messages)
+- Account lockout / brute-force throttling behavior
+- MFA bypass paths (skipping MFA step via direct URL/back-button/API)
+- JWT/token tampering (if applicable — modified payload, alg confusion, expired token reuse)
+
+### CI + reporting requirements
+- GitHub Actions workflow: install, run full suite on PR, run **only `@security`-tagged tests** on a separate scheduled/nightly job.
+- Parallelization/sharding for faster CI runs.
+- HTML report (Playwright's built-in) + trace-on-failure retained as CI artifacts.
+- Optional: Allure reporter for richer historical trend reporting if the team wants it — note the tradeoff (extra dependency/config) rather than assuming it's wanted.
+- Fail the build clearly on any `@security` test failure; make these non-flaky by design (no reliance on timing hacks).
+
+### What I want from you
+1. Propose the full folder structure first, with a one-line purpose per folder — **before writing code**, so I can approve it.
+2. Then scaffold it incrementally: base classes and fixtures first, then one full example flow (login + session + one access-control test) end-to-end, then the CI workflow.
+3. Explain the extension pattern clearly: show me exactly what I'd do to add a new role, a new page, or a new security test category six months from now.
+4. Flag any assumptions you're making about my app's auth model (session cookie vs JWT vs OAuth) and ask if unclear rather than guessing silently.
+
+---
+
+## Notes for you (not part of the prompt)
+- Since your app's auth model (cookie session vs JWT vs SSO) drives a lot of the session/token test design, Claude will likely ask about that if it's not in your context — worth having the answer ready.
+- If you already have an existing repo, paste its current structure/`playwright.config.ts` in the same message so Claude builds on it instead of proposing a parallel structure.
